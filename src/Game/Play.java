@@ -1,11 +1,8 @@
 package Game;
 
 import Entities.Entity;
-import Entities.Item.BombItem;
 import Entities.Mono.*;
-import Entities.Enemy.*;
 
-import Entities.Player.BomberMan;
 import Graphics.Sprite;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -17,19 +14,15 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Play extends Application {
 
-    public static final int WIDTH = 31;//20
-    public static final int HEIGHT = 13;//15
+    public static final int WIDTH = 31;
+    public static final int HEIGHT = 13;
 
     private GraphicsContext gc;
     private Canvas canvas;
-    private List<Entity> entities = new ArrayList<>();
-    private List<Entity> stillObjects = new ArrayList<>();
 
     public static void main(String[] args) {
         launch(args);
@@ -37,36 +30,30 @@ public class Play extends Application {
 
     @Override
     public void start(Stage stage) {
-        // Tao Canvas
         canvas = new Canvas(Sprite.SCALED_SIZE * WIDTH, Sprite.SCALED_SIZE * HEIGHT);
         gc = canvas.getGraphicsContext2D();
 
-        // Tao root container
         Group root = new Group();
         root.getChildren().add(canvas);
 
-        // Tao scene
-        Scene scene = new Scene(root);
-
-        // Them scene vao stage
-        stage.setScene(scene);
+        stage.setScene(new Scene(root));
         stage.show();
 
+        Board board = createMapFromFile();
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long l) {
-                render();
-                update();
+                board.render(gc, canvas);
+                board.update();
             }
         };
 
         timer.start();
-
-        createMono();
-        // createCharacter();
     }
 
-    public void createMono() {
+    public Board createMapFromFile() {
+        Board board = new Board();
+
         File file = new File("res/levels/Level1.txt");
         Scanner scanner = null;
         try {
@@ -74,10 +61,10 @@ public class Play extends Application {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
         int count = 0;
         String str = "";
         Entity object = null;
-        Entity objectE = null;
         while (scanner.hasNextLine()) {
             str = scanner.nextLine();
             count++;
@@ -98,41 +85,17 @@ public class Play extends Application {
                             break;
                         case 'x':
                             object = new Portal(count - 2, k, Sprite.portal.getFxImage());
-                            stillObjects.add(object);
+                            board.entityList.add(object);
                             object = new Brick(count - 2, k, Sprite.brick.getFxImage());
                             break;
-                        case 'p':
-                            objectE = new BomberMan(count - 2, k, Sprite.player_right.getFxImage());
-                            object = new Grass(count - 2, k, Sprite.grass.getFxImage());
-                            break;
-                        case '1':
-                            objectE = new Balloon(count - 2, k, Sprite.balloom_right1.getFxImage());
-                            object = new Grass(count - 2, k, Sprite.grass.getFxImage());
-                            break;
-                        case '2':
-                            objectE = new Oneal(count - 2, k, Sprite.oneal_right1.getFxImage());
-                            object = new Grass(count - 2, k, Sprite.grass.getFxImage());
-                            break;
                         default:
-                            object = new BombItem(count - 2, k, Sprite.bomb_1.getFxImage());
+                            object = new Grass(count - 2, k, Sprite.grass.getFxImage());
+                            break;
                     }
-                    if (object != null) stillObjects.add(object);
-                    object = null;
-                    if (objectE != null) entities.add(objectE);
-                    objectE = null;
+                    board.entityList.add(object);
                 }
             }
         }
-
-    }
-
-    public void update() {
-        entities.forEach(Entity::update);
-    }
-
-    public void render() {
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        stillObjects.forEach(g -> g.render(gc));
-        entities.forEach(g -> g.render(gc));
+        return board;
     }
 }
