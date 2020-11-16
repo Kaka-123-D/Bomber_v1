@@ -3,15 +3,20 @@ package Game;
 import Entities.Entity;
 import Entities.Mono.*;
 
+import Entities.Player.Bomb;
 import Graphics.Sprite;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -36,15 +41,22 @@ public class Play extends Application {
         Group root = new Group();
         root.getChildren().add(canvas);
 
-        stage.setScene(new Scene(root));
-        stage.show();
+        Scene scene = new Scene(root);
 
         Board board = createMapFromFile();
+        KeyControl control = new KeyControl(board, scene);
+        control.catchEvent();
+
+        stage.setScene(control.scene);
+        stage.show();
+
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long l) {
-                board.render(gc, canvas);
                 board.update();
+                control.xuLi();
+                board.bomberMan.updateEvent(control.xControl, control.yControl, control.img);
+                board.render(gc, canvas);
             }
         };
 
@@ -75,21 +87,21 @@ public class Play extends Application {
                     char c = str.charAt(k);
                     switch (c) {
                         case '#':
-                            object = new Wall(count - 2, k, Sprite.wall.getFxImage());
+                            object = new Wall(k, count - 2, Sprite.wall.getFxImage());
                             break;
                         case ' ':
-                            object = new Grass(count - 2, k, Sprite.grass.getFxImage());
+                            object = new Grass(k, count - 2, Sprite.grass.getFxImage());
                             break;
                         case '*':
-                            object = new Brick(count - 2, k, Sprite.brick.getFxImage());
+                            object = new Brick(k, count - 2, Sprite.brick.getFxImage());
                             break;
                         case 'x':
-                            object = new Portal(count - 2, k, Sprite.portal.getFxImage());
+                            object = new Portal(k, count - 2, Sprite.portal.getFxImage());
                             board.entityList.add(object);
-                            object = new Brick(count - 2, k, Sprite.brick.getFxImage());
+                            object = new Brick(k, count - 2, Sprite.brick.getFxImage());
                             break;
                         default:
-                            object = new Grass(count - 2, k, Sprite.grass.getFxImage());
+                            object = new Grass(k, count - 2, Sprite.grass.getFxImage());
                             break;
                     }
                     board.entityList.add(object);

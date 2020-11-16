@@ -13,19 +13,37 @@ public abstract class Entity {
     protected Image img;
 
     public Entity(int x, int y, Image img) {
+        this.x = x * Sprite.SCALED_SIZE;
+        this.y = y * Sprite.SCALED_SIZE;
+        this.img = img;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
         this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
         this.y = y;
+    }
+
+    public Image getImg() {
+        return img;
+    }
+
+    public void setImg(Image img) {
         this.img = img;
     }
 
     public void render(GraphicsContext gc) {
-        SnapshotParameters params = new SnapshotParameters();
-        params.setFill(Color.TRANSPARENT);
-
-        ImageView iv = new ImageView(img);
-        Image base = iv.snapshot(params, null);
-
-        gc.drawImage(base, y * Sprite.SCALED_SIZE, x * Sprite.SCALED_SIZE);
+        gc.drawImage(img, x, y);
     }
 
     public abstract void update();
