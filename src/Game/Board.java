@@ -1,22 +1,82 @@
 package Game;
 
+import Entities.Enemy.Balloon;
+import Entities.Enemy.Oneal;
 import Entities.Entity;
+import Entities.Mono.Brick;
+import Entities.Mono.Grass;
+import Entities.Mono.Portal;
+import Entities.Mono.Wall;
 import Entities.Player.Bomb;
 import Entities.Player.BomberMan;
 import Graphics.Sprite;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Board {
 
+    private int level;
+    private int column;
+    private int row;
     public List<Entity> entityList = new ArrayList<>();
+    public boolean[][] boardCheckMove;
     public BomberMan bomberMan = new BomberMan(1, 1, Sprite.player_right.getFxImage());
 
+    public Board(String fileName) {
 
-    public Board() {
+        File file = new File(fileName);
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        level = scanner.nextInt();
+        row = scanner.nextInt();
+        column = scanner.nextInt();
+        boardCheckMove = new boolean[row][column];
+        String str = scanner.nextLine();
+
+        for (int i = 0; i < row; i++){
+            str = scanner.nextLine();
+            for (int j = 0; j < column; j++) {
+                char c = str.charAt(j);
+                switch (c) {
+                    case '#':
+                        entityList.add(new Wall(j, i, Sprite.wall.getFxImage()));
+                        boardCheckMove[i][j] = true; // -> cant move
+                        break;
+                    case '*':
+                        entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
+                        entityList.add(new Brick(j, i, Sprite.brick.getFxImage()));
+                        boardCheckMove[i][j] = true; // -> cant move -> change false -> can move
+                        break;
+                    case 'x':
+                        entityList.add(new Portal(j, i, Sprite.portal.getFxImage()));
+                        entityList.add(new Brick(j, i, Sprite.wall.getFxImage()));
+                        boardCheckMove[i][j] = true; // -> cant move -> change false -> can move
+                        break;
+                    case '1':
+                        entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
+                        entityList.add(new Balloon(j, i, Sprite.balloom_left1.getFxImage()));
+                        break;
+                    case '2':
+                        entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
+                        entityList.add(new Oneal(j, i, Sprite.oneal_left1.getFxImage()));
+                        break;
+                    default:
+                        entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
+                        break;
+                }
+            }
+        }
     }
 
     public void update() {
@@ -29,5 +89,38 @@ public class Board {
             entityList.get(i).render(gc);
         }
         bomberMan.render(gc);
+    }
+
+    public Board() {
+    }
+
+    public Board(int level, int column, int row) {
+        this.level = level;
+        this.column = column;
+        this.row = row;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public int getColumn() {
+        return column;
+    }
+
+    public void setColumn(int column) {
+        this.column = column;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public void setRow(int row) {
+        this.row = row;
     }
 }
