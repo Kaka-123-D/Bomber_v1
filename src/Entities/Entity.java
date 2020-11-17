@@ -1,11 +1,9 @@
 package Entities;
 
 import Graphics.Sprite;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
+
 
 public abstract class Entity {
     protected int x;
@@ -13,8 +11,8 @@ public abstract class Entity {
     protected Image img;
 
     public Entity(int x, int y, Image img) {
-        this.x = x * Sprite.SCALED_SIZE;
-        this.y = y * Sprite.SCALED_SIZE;
+        this.x = x;
+        this.y = y;
         this.img = img;
     }
 
@@ -43,7 +41,7 @@ public abstract class Entity {
     }
 
     public void render(GraphicsContext gc) {
-        gc.drawImage(img, x, y);
+        gc.drawImage(img, x * Sprite.SCALED_SIZE, y * Sprite.SCALED_SIZE);
     }
 
     public abstract void update();

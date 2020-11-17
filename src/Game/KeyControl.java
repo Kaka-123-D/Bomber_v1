@@ -13,7 +13,7 @@ public class KeyControl {
 
     int xControl = 0;
     int yControl = 0;
-    Image img = null;
+    Image imgPlayer = Sprite.player_right.getFxImage();
     boolean goUp, goDown, goLeft, goRight, putBomb;
     Board board;
     Scene scene;
@@ -52,29 +52,34 @@ public class KeyControl {
     }
 
     public void xuLi() {
+        int X = board.bomberMan.getX();
+        int Y = board.bomberMan.getY();
         xControl = 0;
         yControl = 0;
-        img = null;
         if (goUp) {
-            yControl = -3;
-            img = Sprite.player_up.getFxImage();
+            yControl = -1;
+            if (board.checkMove[Y - 1][X + 4] || board.checkMove[Y - 1][X + 20]) yControl = 0;
+            imgPlayer = Sprite.player_up.getFxImage();
         }
         if (goDown) {
-            yControl = 3;
-            img = Sprite.player_down.getFxImage();
+            yControl = 1;
+            if (board.checkMove[Y + 33][X + 4] || board.checkMove[Y + 33][X + 20]) yControl = 0;
+            imgPlayer = Sprite.player_down.getFxImage();
         }
         if (goRight) {
-            xControl = 3;
-            img = Sprite.player_right.getFxImage();
+            xControl = 1;
+            if (board.checkMove[Y + 8][X + 21] || board.checkMove[Y + 30][X + 21]) xControl = 0;
+            imgPlayer = Sprite.player_right.getFxImage();
         }
         if (goLeft) {
-            xControl = -3;
-            img = Sprite.player_left.getFxImage();
+            xControl = -1;
+            if (board.checkMove[Y + 8][X - 1] || board.checkMove[Y + 30][X - 1]) xControl = 0;
+            imgPlayer = Sprite.player_left.getFxImage();
         }
         if (putBomb) {
-            Bomb bomb = new Bomb(board.bomberMan.getX() / 32,
-                    board.bomberMan.getY() / 32,
-                    Sprite.bomb.getFxImage());
+            int tmpX = (int) (board.bomberMan.getX() + (imgPlayer.getWidth()/3)) / Sprite.SCALED_SIZE;
+            int tmpY = (int) (board.bomberMan.getY() + (imgPlayer.getHeight()/2)) / Sprite.SCALED_SIZE;
+            Bomb bomb = new Bomb(tmpX, tmpY, Sprite.bomb.getFxImage());
             board.entityList.add(bomb);
         }
     }

@@ -1,5 +1,7 @@
 package Game;
 
+import Entities.Enemy.Balloon;
+import Entities.Enemy.Oneal;
 import Entities.Entity;
 import Entities.Mono.*;
 
@@ -23,11 +25,9 @@ import java.util.Scanner;
 
 public class Play extends Application {
 
-    public static final int WIDTH = 31;
-    public static final int HEIGHT = 13;
-
     private GraphicsContext gc;
     private Canvas canvas;
+    String fileMap = "res/levels/Level1.txt";
 
     public static void main(String[] args) {
         launch(args);
@@ -35,7 +35,9 @@ public class Play extends Application {
 
     @Override
     public void start(Stage stage) {
-        canvas = new Canvas(Sprite.SCALED_SIZE * WIDTH, Sprite.SCALED_SIZE * HEIGHT);
+        Board board = new Board(fileMap);
+
+        canvas = new Canvas(Sprite.SCALED_SIZE * board.getColumn(), Sprite.SCALED_SIZE * board.getRow());
         gc = canvas.getGraphicsContext2D();
 
         Group root = new Group();
@@ -43,7 +45,6 @@ public class Play extends Application {
 
         Scene scene = new Scene(root);
 
-        Board board = createMapFromFile();
         KeyControl control = new KeyControl(board, scene);
         control.catchEvent();
 
@@ -55,59 +56,11 @@ public class Play extends Application {
             public void handle(long l) {
                 board.update();
                 control.xuLi();
-                board.bomberMan.updateEvent(control.xControl, control.yControl, control.img);
+                board.bomberMan.updateEvent(control.xControl, control.yControl, control.imgPlayer);
                 board.render(gc, canvas);
             }
         };
 
         timer.start();
-    }
-
-    public Board createMapFromFile() {
-        Board board = new Board();
-
-        File file = new File("res/levels/Level1.txt");
-        Scanner scanner = null;
-        try {
-            scanner = new Scanner(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        int count = 0;
-        String str = "";
-        Entity object = null;
-        while (scanner.hasNextLine()) {
-            str = scanner.nextLine();
-            count++;
-            if (count == 1) continue;
-            else if (count == 15) break;
-            else {
-                for (int k = 0; k < str.length(); k++) {
-                    char c = str.charAt(k);
-                    switch (c) {
-                        case '#':
-                            object = new Wall(k, count - 2, Sprite.wall.getFxImage());
-                            break;
-                        case ' ':
-                            object = new Grass(k, count - 2, Sprite.grass.getFxImage());
-                            break;
-                        case '*':
-                            object = new Brick(k, count - 2, Sprite.brick.getFxImage());
-                            break;
-                        case 'x':
-                            object = new Portal(k, count - 2, Sprite.portal.getFxImage());
-                            board.entityList.add(object);
-                            object = new Brick(k, count - 2, Sprite.brick.getFxImage());
-                            break;
-                        default:
-                            object = new Grass(k, count - 2, Sprite.grass.getFxImage());
-                            break;
-                    }
-                    board.entityList.add(object);
-                }
-            }
-        }
-        return board;
     }
 }
