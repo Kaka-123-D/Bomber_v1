@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 public class BomberMan extends Entity {
 
     private int speed = 2;
+    private int quantityBomb = 1;
 
     public BomberMan(int x, int y, Image img) {
         super(x * Sprite.SCALED_SIZE, y * Sprite.SCALED_SIZE, img);
