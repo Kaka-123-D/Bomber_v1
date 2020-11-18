@@ -1,9 +1,10 @@
 package Entities.Enemy;
 
+import Entities.AnimateEntity;
 import Entities.Entity;
 import javafx.scene.image.Image;
 
-public class Oneal extends Entity {
+public class Oneal extends AnimateEntity {
 
     public Oneal(int x, int y, Image img) {
         super(x, y, img);
@@ -11,6 +12,6 @@ public class Oneal extends Entity {
 
     @Override
     public void update() {
-
+        setAnimate();
     }
 }
