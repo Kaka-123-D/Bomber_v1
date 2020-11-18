@@ -54,19 +54,16 @@ public class Board {
                     case '#':
                         entityList.add(new Wall(j, i, Sprite.wall.getFxImage()));
                         changeCheck(i, j);
-                        //boardCheckMove[i][j] = true; // -> cant move
                         break;
                     case '*':
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
                         entityList.add(new Brick(j, i, Sprite.brick.getFxImage()));
                         changeCheck(i, j);
-                        //boardCheckMove[i][j] = true; // -> cant move -> change false -> can move
                         break;
                     case 'x':
                         entityList.add(new Portal(j, i, Sprite.portal.getFxImage()));
                         entityList.add(new Brick(j, i, Sprite.wall.getFxImage()));
                         changeCheck(i, j);
-                        //boardCheckMove[i][j] = true; // -> cant move -> change false -> can move
                         break;
                     case '1':
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));

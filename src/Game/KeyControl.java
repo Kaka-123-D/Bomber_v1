@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 
 import java.awt.event.KeyListener;
+import java.sql.SQLClientInfoException;
 
 public class KeyControl {
 
@@ -56,26 +57,83 @@ public class KeyControl {
         int Y = board.bomberMan.getY();
         xControl = 0;
         yControl = 0;
+        /* Làm mượt đi lên */
         if (goUp) {
-            yControl = -1;
-            if (board.checkMove[Y - 1][X + 4] || board.checkMove[Y - 1][X + 20]) yControl = 0;
+            yControl = -board.bomberMan.getSpeed();
+            if (board.checkMove[Y + Sprite.SCALED_SIZE / 8][X + Sprite.SCALED_SIZE/8]
+                    && !board.checkMove[Y + Sprite.SCALED_SIZE / 8][X - 1 + ((5 * Sprite.SCALED_SIZE) / 8)]) {
+                yControl = 0;
+                if (!board.checkMove[Y + Sprite.SCALED_SIZE / 8][X + (8 * Sprite.SCALED_SIZE) / 16]) {
+                    xControl = board.bomberMan.getSpeed();
+                }
+            }
+            else if (board.checkMove[Y + Sprite.SCALED_SIZE / 8][X - 1 + ((5 * Sprite.SCALED_SIZE) / 8)]) {
+                yControl = 0;
+                if (!board.checkMove[Y + Sprite.SCALED_SIZE / 8][X + (4 * Sprite.SCALED_SIZE) / 16]) {
+                    xControl = -board.bomberMan.getSpeed();
+                }
+            }
             imgPlayer = Sprite.player_up.getFxImage();
         }
+
+        /* Làm mượt đi xuống */
         if (goDown) {
-            yControl = 1;
-            if (board.checkMove[Y + 33][X + 4] || board.checkMove[Y + 33][X + 20]) yControl = 0;
+            yControl = board.bomberMan.getSpeed();
+            if (board.checkMove[Y + Sprite.SCALED_SIZE][X + Sprite.SCALED_SIZE/8]
+                    && !board.checkMove[Y + Sprite.SCALED_SIZE][X - 1 + ((5 * Sprite.SCALED_SIZE) / 8)]) {
+                yControl = 0;
+                if (!board.checkMove[Y + Sprite.SCALED_SIZE][X + (8 * Sprite.SCALED_SIZE) / 16]) {
+                    xControl = board.bomberMan.getSpeed();
+                }
+            }
+            else if (board.checkMove[Y + Sprite.SCALED_SIZE][X - 1 + ((5 * Sprite.SCALED_SIZE) / 8)]) {
+                yControl = 0;
+                if (!board.checkMove[Y + Sprite.SCALED_SIZE][X + (4 * Sprite.SCALED_SIZE) / 16]) {
+                    xControl = -board.bomberMan.getSpeed();
+                }
+            }
             imgPlayer = Sprite.player_down.getFxImage();
         }
-        if (goRight) {
-            xControl = 1;
-            if (board.checkMove[Y + 8][X + 21] || board.checkMove[Y + 30][X + 21]) xControl = 0;
-            imgPlayer = Sprite.player_right.getFxImage();
-        }
+
+        /* Làm mượt đi sang trái */
         if (goLeft) {
-            xControl = -1;
-            if (board.checkMove[Y + 8][X - 1] || board.checkMove[Y + 30][X - 1]) xControl = 0;
+            xControl = -board.bomberMan.getSpeed();
+            if (board.checkMove[Y + Sprite.SCALED_SIZE / 4][X + 1]
+                    && !board.checkMove[Y + (15 * Sprite.SCALED_SIZE) / 16][X + 1]) {
+                xControl = 0;
+                if (!board.checkMove[Y + (3 * Sprite.SCALED_SIZE) / 4][X + 1]) {
+                    yControl = board.bomberMan.getSpeed();
+                }
+            }
+            else if (board.checkMove[Y + (15 * Sprite.SCALED_SIZE) / 16][X + 1]) {
+                xControl = 0;
+                if (!board.checkMove[Y + Sprite.SCALED_SIZE / 4][X + 1]) {
+                    yControl = -board.bomberMan.getSpeed();
+                }
+            }
             imgPlayer = Sprite.player_left.getFxImage();
         }
+
+        /* Làm mượt đi sang phải */
+        if (goRight) {
+            xControl = board.bomberMan.getSpeed();
+            if (board.checkMove[Y + Sprite.SCALED_SIZE / 4][X + (5 * Sprite.SCALED_SIZE) / 8]
+                    && !board.checkMove[Y + (15 * Sprite.SCALED_SIZE) / 16][X + (5 * Sprite.SCALED_SIZE) / 8]) {
+                xControl = 0;
+                if (!board.checkMove[Y + (3 * Sprite.SCALED_SIZE) / 4][X + (5 * Sprite.SCALED_SIZE) / 8]) {
+                    yControl = board.bomberMan.getSpeed();
+                }
+            }
+            else if (board.checkMove[Y + (15 * Sprite.SCALED_SIZE) / 16][X + (5 * Sprite.SCALED_SIZE) / 8]) {
+                xControl = 0;
+                if (!board.checkMove[Y + (1 * Sprite.SCALED_SIZE) / 4][X + (5 * Sprite.SCALED_SIZE) / 8]) {
+                    yControl = -board.bomberMan.getSpeed();
+                }
+            }
+            imgPlayer = Sprite.player_right.getFxImage();
+        }
+
+        /* Đặt bom */
         if (putBomb) {
             int tmpX = (int) (board.bomberMan.getX() + (imgPlayer.getWidth()/3)) / Sprite.SCALED_SIZE;
             int tmpY = (int) (board.bomberMan.getY() + (imgPlayer.getHeight()/2)) / Sprite.SCALED_SIZE;
