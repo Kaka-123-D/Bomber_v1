@@ -13,8 +13,7 @@ public class FlameUp extends Flame {
     public void update() {
         setAnimate();
         timeImasu--;
-        img  =  Sprite.movingSprite(Sprite.explosion_vertical_top_last,
-                                    Sprite.explosion_vertical_top_last1,
+        img  =  Sprite.movingSprite(Sprite.explosion_vertical_top_last1,
                                     Sprite.explosion_vertical_top_last2,
                                     animate, 15).getFxImage();
     }

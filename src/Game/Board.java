@@ -1,6 +1,7 @@
 package Game;
 
 import Entities.Enemy.Balloon;
+import Entities.Enemy.Enemy;
 import Entities.Enemy.Oneal;
 import Entities.Entity;
 import Entities.Mono.Brick;
@@ -27,6 +28,7 @@ public class Board {
     private int column;
     private int row;
     public List<Entity> entityList = new ArrayList<>();
+    public List<Enemy> enemyList = new ArrayList<>();
     public boolean[][] checkMove;
     public BomberMan bomberMan = new BomberMan(1, 1, Sprite.player_right.getFxImage());
 
@@ -67,11 +69,11 @@ public class Board {
                         break;
                     case '1':
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
-                        entityList.add(new Balloon(j, i, Sprite.balloom_left1.getFxImage()));
+                        enemyList.add(new Balloon(j, i, Sprite.balloom_left1.getFxImage()));
                         break;
                     case '2':
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
-                        entityList.add(new Oneal(j, i, Sprite.oneal_left1.getFxImage()));
+                        enemyList.add(new Oneal(j, i, Sprite.oneal_left1.getFxImage()));
                         break;
                     default:
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
@@ -102,18 +104,34 @@ public class Board {
     }
 
     public void update() {
+        // update mono, bomb, player
         for (int i = 0; i < entityList.size(); i++) {
-            if (entityList.get(i) instanceof Bomb) ((Bomb) entityList.get(i)).updateBomb(entityList);
+            if (entityList.get(i) instanceof Bomb) ((Bomb) entityList.get(i)).updateBomb(entityList, enemyList);
             else entityList.get(i).update();
+        }
+
+        // update enemy
+        for (int i = 0; i < enemyList.size(); i++) {
+            if (!enemyList.get(i).imasu) enemyList.get(i).update();
+            else enemyList.get(i).updateMove(checkMove);
         }
     }
 
     public void render(GraphicsContext gc, Canvas canvas) {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        /* render mono, bomb */
         for (int i = 0; i < entityList.size(); i++) {
             if (checkRender(i)) entityList.get(i).render(gc);
             else i--;
         }
+
+        /* render enemy */
+        for (int i = 0; i < enemyList.size(); i++) {
+            if (!checkRemoveEnemy(i)) enemyList.get(i).render(gc);
+        }
+
+        /* render player */
         if (bomberMan != null && bomberMan.timeReset != 0) bomberMan.render(gc);
     }
 
@@ -122,6 +140,14 @@ public class Board {
         if (checkRemoveBomb(index)) return false;
         if (checkRemoveBrick(index)) return false;
         return true;
+    }
+
+    public boolean checkRemoveEnemy(int index) {
+        if ((enemyList.get(index)).timeToRemove <= 0) {
+            enemyList.remove(index);
+            return true;
+        }
+        return false;
     }
 
     public boolean checkRemovePlayer(int index) {

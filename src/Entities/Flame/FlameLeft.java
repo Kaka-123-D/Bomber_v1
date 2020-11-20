@@ -13,9 +13,8 @@ public class FlameLeft extends Flame {
     public void update() {
         setAnimate();
         timeImasu--;
-        img  =  Sprite.movingSprite(Sprite.explosion_horizontal_left_last,
-                Sprite.explosion_horizontal_left_last1,
-                Sprite.explosion_horizontal_left_last2,
-                animate, 15).getFxImage();
+        img  =  Sprite.movingSprite(Sprite.explosion_horizontal_left_last1,
+                                    Sprite.explosion_horizontal_left_last2,
+                                    animate, 15).getFxImage();
     }
 }

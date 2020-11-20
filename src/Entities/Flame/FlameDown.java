@@ -13,8 +13,7 @@ public class FlameDown extends Flame {
     public void update() {
         setAnimate();
         timeImasu--;
-        img  =  Sprite.movingSprite(Sprite.explosion_vertical_down_last,
-                                    Sprite.explosion_vertical_down_last1,
+        img  =  Sprite.movingSprite(Sprite.explosion_vertical_down_last1,
                                     Sprite.explosion_vertical_down_last2,
                                     animate, 15).getFxImage();
     }
