@@ -1,5 +1,6 @@
 package Game;
 
+import Entities.AnimateEntity;
 import Entities.Enemy.Balloon;
 import Entities.Enemy.Oneal;
 import Entities.Entity;
@@ -13,12 +14,14 @@ import Graphics.Sprite;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
+import javax.swing.border.EmptyBorder;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.SQLClientInfoException;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Board {
@@ -27,6 +30,7 @@ public class Board {
     private int column;
     private int row;
     public List<Entity> entityList = new ArrayList<>();
+    public List<AnimateEntity> enemies = new ArrayList<>();
     public boolean[][] checkMove;
     public BomberMan bomberMan = new BomberMan(1, 1, Sprite.player_right.getFxImage());
 
@@ -67,11 +71,11 @@ public class Board {
                         break;
                     case '1':
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
-                        entityList.add(new Balloon(j, i, Sprite.balloom_left1.getFxImage()));
+                        enemies.add(new Balloon(j, i, Sprite.balloom_left1.getFxImage()));
                         break;
                     case '2':
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
-                        entityList.add(new Oneal(j, i, Sprite.oneal_left1.getFxImage()));
+                        enemies.add(new Oneal(j, i, Sprite.oneal_left1.getFxImage()));
                         break;
                     default:
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
@@ -92,12 +96,74 @@ public class Board {
 
     public void update() {
         entityList.forEach(Entity::update);
+        for (int i = 0; i < enemies.size(); i++) {
+            Random random = new Random();
+            AnimateEntity a = enemies.get(i);
+            int[] arr = new int[4];
+            if (checkMove[a.getY()][a.getX() - 1] == false) arr[0] = 1;
+            if (checkMove[a.getY()][a.getX() + 1 + 32] == false) arr[1] = 1;
+            if (checkMove[a.getY() - 1][a.getX()] == false
+                && checkMove[a.getY() - 1][a.getX() + 31] == false) arr[2] = 1;
+            if (checkMove[a.getY() + 1 + 32][a.getX()] == false
+                    &&checkMove[a.getY() + 32 + 1][a.getX() + 31] == false) arr[3] = 1;
+            while (true) {
+                int rd = random.nextInt(4);
+                if (arr[rd] != 0) {
+                    if (a.time == 32) {
+                        if (rd == 0) {
+                            a.setX(a.getX() - 1);
+                            a.update();
+                            a.setCheckPath(0);
+                        }
+                        else if (rd == 1) {
+                            a.setX(a.getX() + 1);
+                            a.update();
+                            a.setCheckPath(1);
+                        }
+                        else if (rd == 2) {
+                            a.setY(a.getY() - 1);
+                            a.update();
+                            a.setCheckPath(2);
+                        }
+                        else if (rd == 3) {
+                            a.setY(a.getY() + 1);
+                            a.update();
+                            a.setCheckPath(3);
+                        }
+                        break;
+                    } else if (a.time == 0) {
+                        a.time = 32;
+                    } else {
+                        if (a.getCheckPath() == 0) {
+                            a.setX(a.getX() - 1);
+                            a.update();
+                        }
+                        else if (a.getCheckPath() == 1) {
+                            a.setX(a.getX() + 1);
+                            a.update();
+                        }
+                        else if (a.getCheckPath() == 2) {
+                            a.setY(a.getY() - 1);
+                            a.update();
+                        }
+                        else if (a.getCheckPath() == 3) {
+                            a.setY(a.getY() + 1);
+                            a.update();
+                        }
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     public void render(GraphicsContext gc, Canvas canvas) {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         for (int i = 0; i < entityList.size(); i++) {
             entityList.get(i).render(gc);
+        }
+        for (int i = 0; i < enemies.size(); i++) {
+            enemies.get(i).render(gc);
         }
         bomberMan.render(gc);
     }
