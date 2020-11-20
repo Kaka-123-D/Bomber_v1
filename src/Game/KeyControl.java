@@ -332,7 +332,6 @@ public class KeyControl {
     }
 
     public void pressLeft(int X, int Y) {
-
         xControl = -board.bomberMan.getSpeed();
         while (board.checkMove[Y + 1 + Sprite.SCALED_SIZE / 8][X + xControl]
         || board.checkMove[Y + Sprite.SCALED_SIZE - 1][X + xControl]) {
