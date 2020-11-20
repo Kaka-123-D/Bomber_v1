@@ -45,5 +45,13 @@ public abstract class Entity {
         gc.drawImage(img, x * Sprite.SCALED_SIZE, y * Sprite.SCALED_SIZE);
     }
 
+    public boolean isImasu() {
+        return imasu;
+    }
+
+    public void setImasu(boolean imasu) {
+        this.imasu = imasu;
+    }
+
     public abstract void update();
 }

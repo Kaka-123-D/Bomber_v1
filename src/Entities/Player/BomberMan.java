@@ -9,7 +9,7 @@ import javafx.scene.image.Image;
 public class BomberMan extends AnimateEntity {
 
     private int speed = 2 + (Sprite.SCALED_SIZE / 16) - 1;
-    private int amountBom = 3;
+    private int amountBom = 1;
     public int timeSpacePutBom = 0;
     public int timeReset = 60;
     public static int live = 3; // 3 mạng

@@ -2,6 +2,8 @@ package Entities.Flame;
 
 import Entities.AnimateEntity;
 import Entities.Entity;
+import Entities.Item.BombItem;
+import Entities.Item.SpeedItem;
 import Entities.Mono.Grass;
 import Entities.Mono.Wall;
 import Entities.Player.Bomb;
@@ -34,7 +36,9 @@ public abstract class Flame extends AnimateEntity {
             if (entityList.get(i).getX() == x && entityList.get(i).getY() == y
             && !(entityList.get(i) instanceof Wall)
             && !(entityList.get(i) instanceof Grass)
-            && !(entityList.get(i) instanceof Bomb)) {
+            && !(entityList.get(i) instanceof Bomb)
+            && !(entityList.get(i) instanceof BombItem)
+            && !(entityList.get(i) instanceof SpeedItem)) {
                     entityList.get(i).imasu = false;
             }
             if (entityList.get(i) instanceof BomberMan) {

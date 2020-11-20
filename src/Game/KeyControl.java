@@ -1,5 +1,7 @@
 package Game;
 
+import Entities.Item.BombItem;
+import Entities.Item.SpeedItem;
 import Entities.Player.Bomb;
 import Graphics.Sprite;
 import javafx.event.EventHandler;
@@ -101,6 +103,26 @@ public class KeyControl {
                 if (tmp.allowEntry) board.changeCheckMove(bomY, bomX);
                 tmp.allowEntry = false;
             }
+
+            // Xử lí đi qua item bomb
+            if (checkBombItem(board.bomberMan.getX(), board.bomberMan.getY() + 5)) {
+                board.bomberMan.setAmountBom(board.bomberMan.getAmountBom() + 1);
+                BombItem bombItem
+                        = (BombItem) board.checkEntity
+                        (board.bomberMan.getX()/ Sprite.SCALED_SIZE,
+                                (board.bomberMan.getY() + 5) / Sprite.SCALED_SIZE);
+                bombItem.setImasu(false);
+            }
+
+            // Xử lí đi qua item speed
+            if (checkSpeedItem(board.bomberMan.getX(), board.bomberMan.getY() + 5)) {
+                board.bomberMan.setSpeed(board.bomberMan.getSpeed() * 2);
+                SpeedItem speedItem
+                        = (SpeedItem) board.checkEntity
+                        (board.bomberMan.getX()/ Sprite.SCALED_SIZE,
+                                (board.bomberMan.getY() + 5) / Sprite.SCALED_SIZE);
+                speedItem.setImasu(false);
+            }
         }
         if (goRight) {
             pressRight(X, Y);
@@ -113,6 +135,26 @@ public class KeyControl {
                 Bomb tmp = (Bomb) board.checkEntity(bomX, bomY);
                 if (tmp.allowEntry) board.changeCheckMove(bomY, bomX);
                 tmp.allowEntry = false;
+            }
+
+            // Xử lí đi qua item bomb
+            if (checkBombItem(board.bomberMan.getX() + Sprite.SCALED_SIZE, board.bomberMan.getY() + 5)) {
+                board.bomberMan.setAmountBom(board.bomberMan.getAmountBom() + 1);
+                BombItem bombItem
+                        = (BombItem) board.checkEntity
+                        ((board.bomberMan.getX() + Sprite.SCALED_SIZE)/ Sprite.SCALED_SIZE,
+                                (board.bomberMan.getY() + 5) / Sprite.SCALED_SIZE);
+                bombItem.setImasu(false);
+            }
+
+            // Xử lí đi qua item speed
+            if (checkSpeedItem(board.bomberMan.getX() + Sprite.SCALED_SIZE, board.bomberMan.getY() + 5)) {
+                board.bomberMan.setSpeed(board.bomberMan.getSpeed() * 2);
+                SpeedItem speedItem
+                        = (SpeedItem) board.checkEntity
+                        ((board.bomberMan.getX() + Sprite.SCALED_SIZE)/ Sprite.SCALED_SIZE,
+                                (board.bomberMan.getY() + 5) / Sprite.SCALED_SIZE);
+                speedItem.setImasu(false);
             }
         }
 
@@ -128,6 +170,24 @@ public class KeyControl {
                 if (tmp.allowEntry) board.changeCheckMove(bomY, bomX);
                 tmp.allowEntry = false;
             }
+            // Xử lí đi qua item bomb
+            if (checkBombItem(board.bomberMan.getX() + 4, board.bomberMan.getY())) {
+                board.bomberMan.setAmountBom(board.bomberMan.getAmountBom() + 1);
+                BombItem bombItem
+                        = (BombItem) board.checkEntity
+                        ((board.bomberMan.getX() + 4) / Sprite.SCALED_SIZE,
+                                board.bomberMan.getY() / Sprite.SCALED_SIZE);
+                bombItem.setImasu(false);
+            }
+            // Xử lí đi qua item speed
+            if (checkSpeedItem(board.bomberMan.getX() + 4, board.bomberMan.getY())) {
+                board.bomberMan.setSpeed(board.bomberMan.getSpeed() * 2);
+                SpeedItem speedItem
+                        = (SpeedItem) board.checkEntity
+                        ((board.bomberMan.getX() + 4) / Sprite.SCALED_SIZE,
+                                board.bomberMan.getY() / Sprite.SCALED_SIZE);
+                speedItem.setImasu(false);
+            }
         }
         if (goDown) {
             pressDown(X + xControl, Y);
@@ -142,11 +202,43 @@ public class KeyControl {
                 if (tmp.allowEntry) board.changeCheckMove(bomY, bomX);
                 tmp.allowEntry = false;
             }
+            // Xử lí đi qua item bomb
+            if (checkBombItem(board.bomberMan.getX() + 4, board.bomberMan.getY() + Sprite.SCALED_SIZE)) {
+                board.bomberMan.setAmountBom(board.bomberMan.getAmountBom() + 1);
+                BombItem bombItem
+                        = (BombItem) board.checkEntity
+                        ((board.bomberMan.getX() + 4) / Sprite.SCALED_SIZE,
+                                (board.bomberMan.getY() + Sprite.SCALED_SIZE) / Sprite.SCALED_SIZE);
+                bombItem.setImasu(false);
+            }
+            // Xử lí đi qua item speed
+            if (checkSpeedItem(board.bomberMan.getX() + 4, board.bomberMan.getY() + Sprite.SCALED_SIZE)) {
+                board.bomberMan.setSpeed(board.bomberMan.getSpeed() * 2);
+                SpeedItem speedItem
+                        = (SpeedItem) board.checkEntity
+                        ((board.bomberMan.getX() + 4) / Sprite.SCALED_SIZE,
+                                (board.bomberMan.getY() + Sprite.SCALED_SIZE) / Sprite.SCALED_SIZE);
+                speedItem.setImasu(false);
+            }
         }
     }
 
     public boolean checkBomb(int X, int Y) {
         if (board.checkEntity(X, Y) instanceof Bomb) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkBombItem(int X, int Y) {
+        if (board.checkEntity(X / Sprite.SCALED_SIZE, Y / Sprite.SCALED_SIZE) instanceof BombItem) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkSpeedItem(int X, int Y) {
+        if (board.checkEntity(X / Sprite.SCALED_SIZE, Y / Sprite.SCALED_SIZE) instanceof SpeedItem) {
             return true;
         }
         return false;

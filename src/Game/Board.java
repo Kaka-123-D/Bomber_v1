@@ -3,6 +3,9 @@ package Game;
 import Entities.Enemy.Balloon;
 import Entities.Enemy.Oneal;
 import Entities.Entity;
+import Entities.Item.BombItem;
+import Entities.Item.FlameItem;
+import Entities.Item.SpeedItem;
 import Entities.Mono.Brick;
 import Entities.Mono.Grass;
 import Entities.Mono.Portal;
@@ -73,6 +76,24 @@ public class Board {
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
                         entityList.add(new Oneal(j, i, Sprite.oneal_left1.getFxImage()));
                         break;
+                    case 'b':
+                        entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
+                        entityList.add(new BombItem(j, i, Sprite.powerup_bombs.getFxImage()));
+                        entityList.add(new Brick(j, i, Sprite.brick.getFxImage()));
+                        changeCheckMove(i, j);
+                        break;
+                    case 'f':
+                        entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
+                        entityList.add(new FlameItem(j, i, Sprite.powerup_flames.getFxImage()));
+                        entityList.add(new Brick(j, i, Sprite.brick.getFxImage()));
+                        changeCheckMove(i, j);
+                        break;
+                    case 's':
+                        entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
+                        entityList.add(new SpeedItem(j, i, Sprite.powerup_speed.getFxImage()));
+                        entityList.add(new Brick(j, i, Sprite.brick.getFxImage()));
+                        changeCheckMove(i, j);
+                        break;
                     default:
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
                         break;
@@ -121,6 +142,8 @@ public class Board {
         if (checkRemovePlayer(index)) return false;
         if (checkRemoveBomb(index)) return false;
         if (checkRemoveBrick(index)) return false;
+        if (checkRemoveBombItem(index)) return false;
+        if (checkRemoveSpeedItem(index)) return false;
         return true;
     }
 
@@ -134,6 +157,24 @@ public class Board {
                 entityList.add(bomberMan);
             }
             else bomberMan = null;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkRemoveBombItem(int index) {
+        if (entityList.get(index) instanceof BombItem
+                && ((BombItem) entityList.get(index)).isImasu() == false) {
+            entityList.remove(index);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkRemoveSpeedItem(int index) {
+        if (entityList.get(index) instanceof SpeedItem
+                && ((SpeedItem) entityList.get(index)).isImasu() == false) {
+            entityList.remove(index);
             return true;
         }
         return false;
