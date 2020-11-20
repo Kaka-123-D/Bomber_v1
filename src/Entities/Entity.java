@@ -9,6 +9,7 @@ public abstract class Entity {
     protected int x;
     protected int y;
     protected Image img;
+    public boolean imasu = true;
 
     public Entity(int x, int y, Image img) {
         this.x = x;

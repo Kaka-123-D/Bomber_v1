@@ -54,10 +54,12 @@ public class Play extends Application {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long l) {
-                board.update();
-                control.xuLi();
-                board.bomberMan.updateEvent(control.xControl, control.yControl, control.imgPlayer);
-                board.render(gc, canvas);
+                if (board.bomberMan != null) {
+                    board.update();
+                    control.xuLi();
+                    board.bomberMan.updateEvent(control.xControl, control.yControl, control.imgPlayer);
+                    board.render(gc, canvas);
+                }
             }
         };
 

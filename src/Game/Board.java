@@ -53,17 +53,17 @@ public class Board {
                 switch (c) {
                     case '#':
                         entityList.add(new Wall(j, i, Sprite.wall.getFxImage()));
-                        changeCheck(i, j);
+                        changeCheckMove(i, j);
                         break;
                     case '*':
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
                         entityList.add(new Brick(j, i, Sprite.brick.getFxImage()));
-                        changeCheck(i, j);
+                        changeCheckMove(i, j);
                         break;
                     case 'x':
                         entityList.add(new Portal(j, i, Sprite.portal.getFxImage()));
                         entityList.add(new Brick(j, i, Sprite.wall.getFxImage()));
-                        changeCheck(i, j);
+                        changeCheckMove(i, j);
                         break;
                     case '1':
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
@@ -79,36 +79,85 @@ public class Board {
                 }
             }
         }
-
+        entityList.add(bomberMan);
     }
 
-    public void changeCheck(int r, int c) {
+    public void changeCheckMove(int r, int c) {
         for (int i = r * Sprite.SCALED_SIZE; i < (r + 1) * Sprite.SCALED_SIZE; i++) {
             for (int j = c * Sprite.SCALED_SIZE; j < (c + 1) * Sprite.SCALED_SIZE; j++) {
                 if (!checkMove[i][j]) checkMove[i][j] = true;
+                else checkMove[i][j] = false;
             }
         }
     }
 
+    public Entity checkEntity(int X, int Y) {
+        for (int i = entityList.size() - 1; i >= 0 ; i--) {
+            if (entityList.get(i).getX() == X && entityList.get(i).getY() == Y) {
+                if (entityList.get(i) instanceof Grass) return null;
+                else return entityList.get(i);
+            }
+        }
+        return null;
+    }
+
     public void update() {
-        entityList.forEach(Entity::update);
+        for (int i = 0; i < entityList.size(); i++) {
+            if (entityList.get(i) instanceof Bomb) ((Bomb) entityList.get(i)).updateBomb(entityList);
+            else entityList.get(i).update();
+        }
     }
 
     public void render(GraphicsContext gc, Canvas canvas) {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         for (int i = 0; i < entityList.size(); i++) {
-            entityList.get(i).render(gc);
+            if (checkRender(i)) entityList.get(i).render(gc);
+            else i--;
         }
-        bomberMan.render(gc);
+        if (bomberMan != null && bomberMan.timeReset != 0) bomberMan.render(gc);
     }
 
-    public Board() {
+    public boolean checkRender(int index) {
+        if (checkRemovePlayer(index)) return false;
+        if (checkRemoveBomb(index)) return false;
+        if (checkRemoveBrick(index)) return false;
+        return true;
     }
 
-    public Board(int level, int column, int row) {
-        this.level = level;
-        this.column = column;
-        this.row = row;
+    public boolean checkRemovePlayer(int index) {
+        if (entityList.get(index) instanceof BomberMan
+        && ((BomberMan) entityList.get(index)).timeReset == 0) {
+            entityList.remove(index);
+            if (BomberMan.live != 0)
+            {
+                bomberMan = new BomberMan(1, 1, Sprite.player_right.getFxImage());
+                entityList.add(bomberMan);
+            }
+            else bomberMan = null;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkRemoveBomb(int index) {
+        if (entityList.get(index) instanceof Bomb && entityList.get(index).imasu == false) {
+            if (!((Bomb) entityList.get(index)).allowEntry) {
+                changeCheckMove(entityList.get(index).getY(), entityList.get(index).getX());
+            }
+            entityList.remove(index);
+            bomberMan.setAmountBom(bomberMan.getAmountBom() + 1);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkRemoveBrick(int index) {
+        if (entityList.get(index) instanceof Brick && ((Brick) entityList.get(index)).timeDestroy == 0) {
+            changeCheckMove(entityList.get(index).getY(), entityList.get(index).getX());
+            entityList.remove(index);
+            return true;
+        }
+        return false;
     }
 
     public int getLevel() {

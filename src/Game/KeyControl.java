@@ -30,11 +30,24 @@ public class KeyControl {
             @Override
             public void handle(javafx.scene.input.KeyEvent event) {
                 switch (event.getCode()) {
-                    case UP:    goUp = true; break;
-                    case DOWN:  goDown = true; break;
-                    case LEFT:  goLeft  = true; break;
-                    case RIGHT: goRight  = true; break;
+                    case UP:
+                        goUp = true;
+                        goDown = false;
+                        break;
+                    case DOWN:
+                        goDown = true;
+                        goUp = false;
+                        break;
+                    case LEFT:
+                        goLeft  = true;
+                        goRight = false;
+                        break;
+                    case RIGHT:
+                        goRight  = true;
+                        goLeft = false;
+                        break;
                     case SPACE: putBomb = true; break;
+                    default: break;
                 }
             }
         });
@@ -43,11 +56,26 @@ public class KeyControl {
             @Override
             public void handle(KeyEvent event) {
                 switch (event.getCode()) {
-                    case UP:    goUp = false; break;
-                    case DOWN:  goDown = false; break;
-                    case LEFT:  goLeft  = false; break;
-                    case RIGHT: goRight  = false; break;
-                    case SPACE: putBomb = false; break;
+                    case UP:
+                        goUp = false;
+                        imgPlayer = Sprite.player_up.getFxImage();
+                        break;
+                    case DOWN:
+                        goDown = false;
+                        imgPlayer = Sprite.player_down.getFxImage();
+                        break;
+                    case LEFT:
+                        goLeft  = false;
+                        imgPlayer = Sprite.player_left.getFxImage();
+                        break;
+                    case RIGHT:
+                        goRight  = false;
+                        imgPlayer = Sprite.player_right.getFxImage();
+                        break;
+                    case SPACE:
+                        putBomb = false;
+                        break;
+                    default: break;
                 }
             }
         });
@@ -56,21 +84,80 @@ public class KeyControl {
     public void xuLi() {
         int X = board.bomberMan.getX();
         int Y = board.bomberMan.getY();
+        int speed = board.bomberMan.getSpeed();
         xControl = 0;
         yControl = 0;
 
-        if (goUp) pressUp(X, Y);
-        if (goDown) pressDown(X, Y);
-        if (goLeft) pressLeft(X, Y);
-        if (goRight) pressRight(X, Y);
-        if (putBomb) showBomb();
+        if (putBomb && board.bomberMan.timeSpacePutBom == 0) showBomb();
+        if (goLeft) {
+            pressLeft(X, Y);
+
+            /* Xử lí đi qua bom */
+            int bomX = (X + speed + (5 * Sprite.SCALED_SIZE) / 8) / Sprite.SCALED_SIZE;
+            int notBomX = (X - speed + (5 * Sprite.SCALED_SIZE) / 8) / Sprite.SCALED_SIZE;
+            int bomY = (Y + 1 + Sprite.SCALED_SIZE / 8) / Sprite.SCALED_SIZE;
+            if (checkBomb(bomX, bomY) && !checkBomb(notBomX, bomY)) {
+                Bomb tmp = (Bomb) board.checkEntity(bomX, bomY);
+                if (tmp.allowEntry) board.changeCheckMove(bomY, bomX);
+                tmp.allowEntry = false;
+            }
+        }
+        if (goRight) {
+            pressRight(X, Y);
+
+            /* Xử lí đi qua bom */
+            int bomX = (X - speed) / Sprite.SCALED_SIZE;
+            int notBomX = (X + speed) / Sprite.SCALED_SIZE;
+            int bomY = (Y + 1 + Sprite.SCALED_SIZE / 8) / Sprite.SCALED_SIZE;
+            if (checkBomb(bomX, bomY) && !checkBomb(notBomX, bomY)) {
+                Bomb tmp = (Bomb) board.checkEntity(bomX, bomY);
+                if (tmp.allowEntry) board.changeCheckMove(bomY, bomX);
+                tmp.allowEntry = false;
+            }
+        }
+
+        if (goUp) {
+            pressUp(X + xControl, Y);
+
+            /* Xử lí đi qua bom */
+            int bomX = (X + (3 * Sprite.SCALED_SIZE) / 8) / Sprite.SCALED_SIZE;
+            int bomY = (Y + Sprite.SCALED_SIZE + speed) / Sprite.SCALED_SIZE;
+            int notBomY = (Y + Sprite.SCALED_SIZE - speed) / Sprite.SCALED_SIZE;
+            if (checkBomb(bomX, bomY) && !checkBomb(bomX, notBomY)) {
+                Bomb tmp = (Bomb) board.checkEntity(bomX, bomY);
+                if (tmp.allowEntry) board.changeCheckMove(bomY, bomX);
+                tmp.allowEntry = false;
+            }
+        }
+        if (goDown) {
+            pressDown(X + xControl, Y);
+
+            /* Xử lí đi qua bom */
+            int bomX = (X + (3 * Sprite.SCALED_SIZE) / 8) / Sprite.SCALED_SIZE;
+            int bomY = (Y + Sprite.SCALED_SIZE / 8 - speed) / Sprite.SCALED_SIZE;
+            int notBomY = (Y + Sprite.SCALED_SIZE / 8 + speed) / Sprite.SCALED_SIZE;
+
+            if (checkBomb(bomX, bomY) && !checkBomb(bomX, notBomY)) {
+                Bomb tmp = (Bomb) board.checkEntity(bomX, bomY);
+                if (tmp.allowEntry) board.changeCheckMove(bomY, bomX);
+                tmp.allowEntry = false;
+            }
+        }
+    }
+
+    public boolean checkBomb(int X, int Y) {
+        if (board.checkEntity(X, Y) instanceof Bomb) {
+            return true;
+        }
+        return false;
     }
 
     public void showBomb() {
         int nBomb = board.bomberMan.getAmountBom();
         if (nBomb == 0) return;
-        int tmpX = (int) (board.bomberMan.getX() + (imgPlayer.getWidth()/3)) / Sprite.SCALED_SIZE;
-        int tmpY = (int) (board.bomberMan.getY() + (imgPlayer.getHeight()/2)) / Sprite.SCALED_SIZE;
+        int tmpX =  (board.bomberMan.getX() + (5 * Sprite.SCALED_SIZE) / 16) / Sprite.SCALED_SIZE;
+        int tmpY =  (board.bomberMan.getY() + (3 * Sprite.SCALED_SIZE) / 4) / Sprite.SCALED_SIZE;
+        if (board.checkEntity(tmpX, tmpY) instanceof Bomb) return;
         Bomb bomb = new Bomb(tmpX, tmpY, Sprite.bomb.getFxImage());
         board.entityList.add(bomb);
         board.bomberMan.setAmountBom(nBomb - 1);
@@ -79,18 +166,33 @@ public class KeyControl {
     public void pressUp(int X, int Y) {
 
         yControl = -board.bomberMan.getSpeed();
-        if (board.checkMove[Y + Sprite.SCALED_SIZE / 8][X + Sprite.SCALED_SIZE/8]
-                && !board.checkMove[Y + Sprite.SCALED_SIZE / 8][X - 1 + ((5 * Sprite.SCALED_SIZE) / 8)]) {
-            yControl = 0;
-            if (!board.checkMove[Y + Sprite.SCALED_SIZE / 8][X + (8 * Sprite.SCALED_SIZE) / 16]) {
-                xControl = board.bomberMan.getSpeed();
-            }
+        while (board.checkMove[Y + yControl][X + Sprite.SCALED_SIZE / 8]
+        || board.checkMove[Y + yControl][X + (5 * Sprite.SCALED_SIZE) / 8]) {
+                yControl++;
+                if (yControl > 0){
+                    yControl = 0;
+                    break;
+                }
         }
-        else if (board.checkMove[Y + Sprite.SCALED_SIZE / 8][X - 1 + ((5 * Sprite.SCALED_SIZE) / 8)]) {
-            yControl = 0;
-            if (!board.checkMove[Y + Sprite.SCALED_SIZE / 8][X + (4 * Sprite.SCALED_SIZE) / 16]) {
-                xControl = -board.bomberMan.getSpeed();
-            }
+
+        /* Nếu cả hai bên đầu đều bị chặn. */
+        if (board.checkMove[Y - 1][X + Sprite.SCALED_SIZE / 8]
+        &&  board.checkMove[Y - 1][X + (5 * Sprite.SCALED_SIZE) / 8]) {
+                yControl = 0;
+        }
+
+        /* bên phải đầu bị chặn, bên trái không bị chặn */
+        if (!board.checkMove[Y - 1][X + Sprite.SCALED_SIZE / 8]
+        && board.checkMove[Y - 1][X + (5 * Sprite.SCALED_SIZE) / 8]) {
+                if (!goRight && !goLeft) xControl = -1;
+                yControl = 0;
+        }
+
+        /* bên phải đầu không bị chặn, bên trái bị chặn. */
+        if (board.checkMove[Y - 1][X + Sprite.SCALED_SIZE / 8]
+        && !board.checkMove[Y - 1][X + (5 * Sprite.SCALED_SIZE) / 8]) {
+                if (!goLeft && !goRight) xControl = 1;
+                yControl = 0;
         }
 
         /* Nhún nhảy */
@@ -102,18 +204,33 @@ public class KeyControl {
     public void pressDown(int X, int Y) {
 
         yControl = board.bomberMan.getSpeed();
-        if (board.checkMove[Y + Sprite.SCALED_SIZE][X + Sprite.SCALED_SIZE/8]
-                && !board.checkMove[Y + Sprite.SCALED_SIZE][X - 1 + ((5 * Sprite.SCALED_SIZE) / 8)]) {
-            yControl = 0;
-            if (!board.checkMove[Y + Sprite.SCALED_SIZE][X + (8 * Sprite.SCALED_SIZE) / 16]) {
-                xControl = board.bomberMan.getSpeed();
-            }
+        while (board.checkMove[Y + yControl + Sprite.SCALED_SIZE][X + Sprite.SCALED_SIZE / 8]
+        || board.checkMove[Y + yControl + Sprite.SCALED_SIZE][X + (5 * Sprite.SCALED_SIZE) / 8]) {
+                yControl--;
+                if (yControl < 0){
+                    yControl = 0;
+                    break;
+                }
         }
-        else if (board.checkMove[Y + Sprite.SCALED_SIZE][X - 1 + ((5 * Sprite.SCALED_SIZE) / 8)]) {
-            yControl = 0;
-            if (!board.checkMove[Y + Sprite.SCALED_SIZE][X + (4 * Sprite.SCALED_SIZE) / 16]) {
-                xControl = -board.bomberMan.getSpeed();
-            }
+
+        /* 2 bên chân đều bị chặn. */
+        if (board.checkMove[Y + Sprite.SCALED_SIZE + 1][X + Sprite.SCALED_SIZE / 8]
+        &&  board.checkMove[Y + Sprite.SCALED_SIZE + 1][X + (5 * Sprite.SCALED_SIZE) / 8]) {
+                yControl = 0;
+        }
+
+        /* bên chân phải bị chặn, chân trái không bị chặn. */
+        if (!board.checkMove[Y + Sprite.SCALED_SIZE + 1][X + Sprite.SCALED_SIZE / 8]
+        &&   board.checkMove[Y + Sprite.SCALED_SIZE + 1][X + (5 * Sprite.SCALED_SIZE) / 8]) {
+                if (!goRight && !goLeft) xControl = -1;
+                yControl = 0;
+        }
+
+        /* bên chân phải không bị chặn, bên trái bị chặn. */
+        if (board.checkMove[Y + Sprite.SCALED_SIZE + 1][X + Sprite.SCALED_SIZE / 8]
+        && !board.checkMove[Y + Sprite.SCALED_SIZE + 1][X + (5 * Sprite.SCALED_SIZE) / 8]) {
+                if (!goLeft && !goRight) xControl = 1;
+                yControl = 0;
         }
 
         /* Nhún nhảy */
@@ -125,18 +242,35 @@ public class KeyControl {
     public void pressLeft(int X, int Y) {
 
         xControl = -board.bomberMan.getSpeed();
-        if (board.checkMove[Y + Sprite.SCALED_SIZE / 4][X + 1]
-                && !board.checkMove[Y + (15 * Sprite.SCALED_SIZE) / 16][X + 1]) {
-            xControl = 0;
-            if (!board.checkMove[Y + (3 * Sprite.SCALED_SIZE) / 4][X + 1]) {
-                yControl = board.bomberMan.getSpeed();
-            }
+        while (board.checkMove[Y + 1 + Sprite.SCALED_SIZE / 8][X + xControl]
+        || board.checkMove[Y + Sprite.SCALED_SIZE - 1][X + xControl]) {
+                xControl++;
+                if (xControl > 0){
+                    xControl = 0;
+                    break;
+                }
         }
-        else if (board.checkMove[Y + (15 * Sprite.SCALED_SIZE) / 16][X + 1]) {
-            xControl = 0;
-            if (!board.checkMove[Y + Sprite.SCALED_SIZE / 4][X + 1]) {
-                yControl = -board.bomberMan.getSpeed();
-            }
+
+        /* Mắt bị chặn, Tay bị chặn */
+        if (board.checkMove[Y + Sprite.SCALED_SIZE / 4][X - 1]
+        &&  board.checkMove[Y + (3 * Sprite.SCALED_SIZE) / 4][X - 1]) {
+                xControl = 0;
+        }
+
+        /* Mắt bị chặn, tay không bị chặn. */
+        else if (board.checkMove[Y + 1 + Sprite.SCALED_SIZE / 8][X - 1]
+        && !board.checkMove[Y - 1 + Sprite.SCALED_SIZE][X - 1]) {
+                //if (!board.checkMove[Y + (3 * Sprite.SCALED_SIZE) / 4][X - 1])
+                yControl = 1;
+                xControl = 0;
+        }
+
+        /* Mắt không bị chặn, tay bị chặn. */
+        else if (!board.checkMove[Y + 1 + Sprite.SCALED_SIZE / 8][X - 1]
+        &&   board.checkMove[Y + Sprite.SCALED_SIZE - 1][X - 1]) {
+                //if (!board.checkMove[Y + (1 * Sprite.SCALED_SIZE) / 4][X - 1])
+                yControl = -1;
+                xControl = 0;
         }
 
         /* Nhún nhảy */
@@ -146,19 +280,37 @@ public class KeyControl {
     }
 
     public void pressRight(int X, int Y) {
+
         xControl = board.bomberMan.getSpeed();
-        if (board.checkMove[Y + Sprite.SCALED_SIZE / 4][X + (5 * Sprite.SCALED_SIZE) / 8]
-                && !board.checkMove[Y + (15 * Sprite.SCALED_SIZE) / 16][X + (5 * Sprite.SCALED_SIZE) / 8]) {
-            xControl = 0;
-            if (!board.checkMove[Y + (3 * Sprite.SCALED_SIZE) / 4][X + (5 * Sprite.SCALED_SIZE) / 8]) {
-                yControl = board.bomberMan.getSpeed();
-            }
+        while (board.checkMove[Y + 1 + Sprite.SCALED_SIZE / 8][X + xControl + (5 * Sprite.SCALED_SIZE) / 8]
+        || board.checkMove[Y + Sprite.SCALED_SIZE - 1][X + xControl + (5 * Sprite.SCALED_SIZE) / 8]) {
+                xControl--;
+                if (xControl < 0){
+                    xControl = 0;
+                    break;
+                }
         }
-        else if (board.checkMove[Y + (15 * Sprite.SCALED_SIZE) / 16][X + (5 * Sprite.SCALED_SIZE) / 8]) {
-            xControl = 0;
-            if (!board.checkMove[Y + (1 * Sprite.SCALED_SIZE) / 4][X + (5 * Sprite.SCALED_SIZE) / 8]) {
-                yControl = -board.bomberMan.getSpeed();
-            }
+
+        /* Mắt và tay bị chặn. */
+        if (board.checkMove[Y + Sprite.SCALED_SIZE / 4][X + 1 + (5 * Sprite.SCALED_SIZE) / 8]
+        &&  board.checkMove[Y + (3 * Sprite.SCALED_SIZE) / 4][X + 1 + (5 * Sprite.SCALED_SIZE) / 8]) {
+                xControl = 0;
+        }
+
+        /* Mắt bị chặn, tay không bị chặn. */
+        else if (board.checkMove[Y + 1 + Sprite.SCALED_SIZE / 8][X + 1 + (5 * Sprite.SCALED_SIZE) / 8]
+        && !board.checkMove[Y + Sprite.SCALED_SIZE - 1][X + 1 +  (5 * Sprite.SCALED_SIZE) /  8]) {
+                //if (!board.checkMove[Y + (3 * Sprite.SCALED_SIZE) / 4][X + 1 + (5 * Sprite.SCALED_SIZE) / 8])
+                yControl = 1;
+                xControl = 0;
+        }
+
+        /* Mắt không bị chặn, tay bị chặn. */
+        else if (!board.checkMove[Y + 1 + Sprite.SCALED_SIZE / 8][X + 1 + (5 * Sprite.SCALED_SIZE) / 8]
+        &&   board.checkMove[Y + Sprite.SCALED_SIZE - 1][X + 1 + (5 * Sprite.SCALED_SIZE) / 8]) {
+                //if (!board.checkMove[Y + (1 * Sprite.SCALED_SIZE) / 4][X + 1 + (5 * Sprite.SCALED_SIZE) / 8])
+                yControl = -1;
+                xControl = 0;
         }
 
         /* Nhún nhảy */
