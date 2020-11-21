@@ -37,35 +37,25 @@ public class Bomb extends AnimateEntity {
         if (timeToExploded == 0) {
 
             flameCenter = new FlameCenter(x, y, Sprite.bomb_exploded.getFxImage());
-            flameCenter.destroy(entityList);
-            flameCenter.killEnemy(enemyList);
 
             if (checkEntity(x, y - 1, entityList) == null) {
                 flameUp = new FlameUp(x, y - 1, Sprite.explosion_vertical_top_last.getFxImage());
-                flameUp.destroy(entityList);
-                flameUp.killEnemy(enemyList);
             }
 
             if (checkEntity(x, y + 1, entityList) == null) {
                 flameDown = new FlameDown(x, y + 1, Sprite.explosion_vertical_down_last.getFxImage());
-                flameDown.destroy(entityList);
-                flameDown.killEnemy(enemyList);
             }
 
             if (checkEntity(x + 1, y, entityList) == null) {
                 flameRight = new FlameRight(x + 1, y, Sprite.explosion_horizontal_right_last.getFxImage());
-                flameRight.destroy(entityList);
-                flameRight.killEnemy(enemyList);
             }
 
             if (checkEntity(x - 1, y, entityList) == null) {
                 flameLeft = new FlameLeft(x - 1, y, Sprite.explosion_horizontal_left_last.getFxImage());
-                flameLeft.destroy(entityList);
-                flameLeft.killEnemy(enemyList);
             }
         }
         if (timeToExploded < 0) {
-            explode();
+            explode(entityList, enemyList);
             return;
         }
         img = Sprite.movingSprite(Sprite.bomb, Sprite.bomb_1, Sprite.bomb_2, animate, 20).getFxImage();
@@ -76,23 +66,42 @@ public class Bomb extends AnimateEntity {
         for (int i = entityList.size() - 1; i >= 0 ; i--) {
             if (entityList.get(i).getX() == X && entityList.get(i).getY() == Y) {
                 if (entityList.get(i) instanceof Grass
-                || entityList.get(i) instanceof Bomb
-                || entityList.get(i) instanceof Brick) return null;
+                        || entityList.get(i) instanceof Bomb
+                        || entityList.get(i) instanceof Brick) return null;
                 else return entityList.get(i);
             }
         }
         return null;
     }
 
-    public void explode() {
+    public void explode(List<Entity> entityList, List<Enemy> enemyList) {
         explodeTime--;
         if (explodeTime == 0) imasu = false;
+
+        destroy(flameCenter, entityList, enemyList);
+        destroy(flameUp, entityList, enemyList);
+        destroy(flameDown, entityList, enemyList);
+        destroy(flameLeft, entityList, enemyList);
+        destroy(flameRight, entityList, enemyList);
+
         setAnimate();
         img = Sprite.movingSprite(Sprite.bomb_exploded1, Sprite.bomb_exploded2, animate, 15).getFxImage();
-        if(flameUp != null) flameUp.update();
-        if(flameDown != null) flameDown.update();
-        if(flameLeft != null) flameLeft.update();
-        if(flameRight != null) flameRight.update();
+        update(flameUp);
+        update(flameDown);
+        update(flameRight);
+        update(flameLeft);
+        update(flameCenter);
+    }
+
+    public void destroy(Flame flame, List<Entity> entityList, List<Enemy> enemyList) {
+        if (flame != null) {
+            flame.destroy(entityList);
+            flame.killEnemy(enemyList);
+        }
+    }
+
+    public void update(Flame flame) {
+        if (flame != null) flame.update();
     }
 
     @Override

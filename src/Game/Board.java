@@ -32,7 +32,8 @@ public class Board {
     private int row;
     public List<Entity> entityList = new ArrayList<>();
     public List<Enemy> enemyList = new ArrayList<>();
-    public boolean[][] checkMove;
+    public boolean[][] checkMovePlayer;
+    public boolean[][] checkMoveEnemy;
     public BomberMan bomberMan = new BomberMan(1, 1, Sprite.player_right.getFxImage());
 
     public Board(String fileName) {
@@ -48,7 +49,8 @@ public class Board {
         level = scanner.nextInt();
         row = scanner.nextInt();
         column = scanner.nextInt();
-        checkMove = new boolean[row * Sprite.SCALED_SIZE][column * Sprite.SCALED_SIZE];
+        checkMovePlayer = new boolean[row * Sprite.SCALED_SIZE][column * Sprite.SCALED_SIZE];
+        checkMoveEnemy = new boolean[row * Sprite.SCALED_SIZE][column * Sprite.SCALED_SIZE];
         String str = scanner.nextLine();
 
         for (int i = 0; i < row; i++){
@@ -58,17 +60,20 @@ public class Board {
                 switch (c) {
                     case '#':
                         entityList.add(new Wall(j, i, Sprite.wall.getFxImage()));
-                        changeCheckMove(i, j);
+                        changeCheckMovePlayer(i, j);
+                        changeCheckMoveEnemy(i, j);
                         break;
                     case '*':
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
                         entityList.add(new Brick(j, i, Sprite.brick.getFxImage()));
-                        changeCheckMove(i, j);
+                        changeCheckMovePlayer(i, j);
+                        changeCheckMoveEnemy(i, j);
                         break;
                     case 'x':
                         entityList.add(new Portal(j, i, Sprite.portal.getFxImage()));
                         entityList.add(new Brick(j, i, Sprite.wall.getFxImage()));
-                        changeCheckMove(i, j);
+                        changeCheckMovePlayer(i, j);
+                        changeCheckMoveEnemy(i, j);
                         break;
                     case '1':
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
@@ -82,19 +87,22 @@ public class Board {
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
                         entityList.add(new BombItem(j, i, Sprite.powerup_bombs.getFxImage()));
                         entityList.add(new Brick(j, i, Sprite.brick.getFxImage()));
-                        changeCheckMove(i, j);
+                        changeCheckMovePlayer(i, j);
+                        changeCheckMoveEnemy(i, j);
                         break;
                     case 'f':
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
                         entityList.add(new FlameItem(j, i, Sprite.powerup_flames.getFxImage()));
                         entityList.add(new Brick(j, i, Sprite.brick.getFxImage()));
-                        changeCheckMove(i, j);
+                        changeCheckMovePlayer(i, j);
+                        changeCheckMoveEnemy(i, j);
                         break;
                     case 's':
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
                         entityList.add(new SpeedItem(j, i, Sprite.powerup_speed.getFxImage()));
                         entityList.add(new Brick(j, i, Sprite.brick.getFxImage()));
-                        changeCheckMove(i, j);
+                        changeCheckMovePlayer(i, j);
+                        changeCheckMoveEnemy(i, j);
                         break;
                     default:
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
@@ -105,11 +113,20 @@ public class Board {
         entityList.add(bomberMan);
     }
 
-    public void changeCheckMove(int r, int c) {
+    public void changeCheckMovePlayer(int r, int c) {
         for (int i = r * Sprite.SCALED_SIZE; i < (r + 1) * Sprite.SCALED_SIZE; i++) {
             for (int j = c * Sprite.SCALED_SIZE; j < (c + 1) * Sprite.SCALED_SIZE; j++) {
-                if (!checkMove[i][j]) checkMove[i][j] = true;
-                else checkMove[i][j] = false;
+                if (!checkMovePlayer[i][j]) checkMovePlayer[i][j] = true;
+                else checkMovePlayer[i][j] = false;
+            }
+        }
+    }
+
+    public void changeCheckMoveEnemy(int r, int c) {
+        for (int i = r * Sprite.SCALED_SIZE; i < (r + 1) * Sprite.SCALED_SIZE; i++) {
+            for (int j = c * Sprite.SCALED_SIZE; j < (c + 1) * Sprite.SCALED_SIZE; j++) {
+                if (!checkMoveEnemy[i][j]) checkMoveEnemy[i][j] = true;
+                else checkMoveEnemy[i][j] = false;
             }
         }
     }
@@ -125,6 +142,10 @@ public class Board {
     }
 
     public void update() {
+
+        // check bomber va chạm enemy
+        if (checkEnemyKillPlayer()) bomberMan.imasu = false;
+
         // update mono, bomb, player
         for (int i = 0; i < entityList.size(); i++) {
             if (entityList.get(i) instanceof Bomb) ((Bomb) entityList.get(i)).updateBomb(entityList, enemyList);
@@ -132,9 +153,10 @@ public class Board {
         }
 
         // update enemy
+        if (!bomberMan.imasu) return;
         for (int i = 0; i < enemyList.size(); i++) {
             if (!enemyList.get(i).imasu) enemyList.get(i).update();
-            else enemyList.get(i).updateMove(checkMove);
+            else enemyList.get(i).updateMove(checkMoveEnemy);
         }
     }
 
@@ -165,6 +187,21 @@ public class Board {
         return true;
     }
 
+    public boolean checkEnemyKillPlayer() {
+        for (int i = 0; i < enemyList.size(); i++) {
+            int enemyXUP = (enemyList.get(i).getX() + 4) / Sprite.SCALED_SIZE;
+            int enemyYUP = (enemyList.get(i).getY() + 4) / Sprite.SCALED_SIZE;
+            int enemyXDOWN = 1 + (enemyList.get(i).getX() - 4) / Sprite.SCALED_SIZE;
+            int enemyYDOWN = 1 + (enemyList.get(i).getY() - 4) / Sprite.SCALED_SIZE;
+            int playerX = (bomberMan.getX() + (3 * Sprite.SCALED_SIZE) / 8) / Sprite.SCALED_SIZE;
+            int playerY = (bomberMan.getY() + (3 * Sprite.SCALED_SIZE) / 8) / Sprite.SCALED_SIZE;
+
+            if (enemyXUP == playerX && enemyYUP == playerY) return true;
+            if (enemyXDOWN == playerX && enemyYDOWN == playerY) return true;
+        }
+        return false;
+    }
+
     public boolean checkRemoveEnemy(int index) {
         if ((enemyList.get(index)).timeToRemove <= 0) {
             enemyList.remove(index);
@@ -175,7 +212,7 @@ public class Board {
 
     public boolean checkRemovePlayer(int index) {
         if (entityList.get(index) instanceof BomberMan
-        && ((BomberMan) entityList.get(index)).timeReset == 0) {
+                && ((BomberMan) entityList.get(index)).timeReset == 0) {
             entityList.remove(index);
             if (BomberMan.live != 0)
             {
@@ -209,8 +246,9 @@ public class Board {
     public boolean checkRemoveBomb(int index) {
         if (entityList.get(index) instanceof Bomb && entityList.get(index).imasu == false) {
             if (!((Bomb) entityList.get(index)).allowEntry) {
-                changeCheckMove(entityList.get(index).getY(), entityList.get(index).getX());
+                changeCheckMovePlayer(entityList.get(index).getY(), entityList.get(index).getX());
             }
+            changeCheckMoveEnemy(entityList.get(index).getY(), entityList.get(index).getX());
             entityList.remove(index);
             bomberMan.setAmountBom(bomberMan.getAmountBom() + 1);
             return true;
@@ -220,7 +258,8 @@ public class Board {
 
     public boolean checkRemoveBrick(int index) {
         if (entityList.get(index) instanceof Brick && ((Brick) entityList.get(index)).timeDestroy == 0) {
-            changeCheckMove(entityList.get(index).getY(), entityList.get(index).getX());
+            changeCheckMovePlayer(entityList.get(index).getY(), entityList.get(index).getX());
+            changeCheckMoveEnemy(entityList.get(index).getY(), entityList.get(index).getX());
             entityList.remove(index);
             return true;
         }

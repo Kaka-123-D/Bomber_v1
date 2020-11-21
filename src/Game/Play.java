@@ -56,8 +56,10 @@ public class Play extends Application {
             public void handle(long l) {
                 if (board.bomberMan != null) {
                     board.update();
-                    control.xuLi();
-                    board.bomberMan.updateEvent(control.xControl, control.yControl, control.imgPlayer);
+                    if (board.bomberMan.imasu) {
+                        control.xuLi();
+                        board.bomberMan.updateEvent(control.xControl, control.yControl, control.imgPlayer);
+                    }
                     board.render(gc, canvas);
                 }
             }
