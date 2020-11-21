@@ -13,7 +13,7 @@ public class Oneal extends Enemy {
 
     @Override
     public void update() {
-        timeMoveACell--;
+        //timeMoveACell--;
         setAnimate();
         if (!imasu) die();
     }
@@ -25,4 +25,10 @@ public class Oneal extends Enemy {
         else if (timeToRemove <= 25 && timeToRemove >= 10) img = Sprite.mob_dead2.getFxImage();
         else if (timeToRemove >= 0 && timeToRemove <= 10) img = Sprite.mob_dead3.getFxImage();
     }
+
+    @Override
+    public void updateMove(boolean[][] checkMove) {
+
+    }
+
 }
