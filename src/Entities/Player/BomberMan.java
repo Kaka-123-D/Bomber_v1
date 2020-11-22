@@ -8,7 +8,8 @@ import javafx.scene.image.Image;
 
 public class BomberMan extends AnimateEntity {
 
-    private int speed = 2 + (Sprite.SCALED_SIZE / 16) - 1;
+    private int speed = 1 + (Sprite.SCALED_SIZE / 16) - 1;
+    private int lengthFlame = 1;
     private int amountBom = 1;
     public int timeSpacePutBom = 0;
     public int timeReset = 60;
@@ -17,6 +18,14 @@ public class BomberMan extends AnimateEntity {
     public BomberMan(int x, int y, Image img) {
         super(x * Sprite.SCALED_SIZE, y * Sprite.SCALED_SIZE, img);
         live--;
+    }
+
+    public int getLengthFlame() {
+        return lengthFlame;
+    }
+
+    public void setLengthFlame(int lengthFlame) {
+        this.lengthFlame = lengthFlame;
     }
 
     public int getSpeed() {

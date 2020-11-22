@@ -4,6 +4,7 @@ import Entities.AnimateEntity;
 import Entities.Enemy.Enemy;
 import Entities.Entity;
 import Entities.Item.BombItem;
+import Entities.Item.Item;
 import Entities.Item.SpeedItem;
 import Entities.Mono.Grass;
 import Entities.Mono.Wall;
@@ -18,15 +19,6 @@ import java.util.List;
 public abstract class Flame extends AnimateEntity {
 
     public int timeImasu = 30;
-    private int length = 1;
-
-    public int getLength() {
-        return length;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
-    }
 
     public Flame(int x, int y, Image img) {
         super(x, y, img);
@@ -38,8 +30,7 @@ public abstract class Flame extends AnimateEntity {
                     && !(entityList.get(i) instanceof Wall)
                     && !(entityList.get(i) instanceof Grass)
                     && !(entityList.get(i) instanceof Bomb)
-                    && !(entityList.get(i) instanceof BombItem)
-                    && !(entityList.get(i) instanceof SpeedItem)) {
+                    && !(entityList.get(i) instanceof Item)) {
                 entityList.get(i).imasu = false;
             }
 

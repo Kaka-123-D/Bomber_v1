@@ -1,6 +1,7 @@
 package Game;
 
 import Entities.Item.BombItem;
+import Entities.Item.FlameItem;
 import Entities.Item.SpeedItem;
 import Entities.Player.Bomb;
 import Graphics.Sprite;
@@ -158,19 +159,29 @@ public class KeyControl {
     }
 
     public void eatItem(int X, int Y) {
-        if (!checkEatSpeed(X, Y)) {         // check ăn item speed
-            if (!checkEatBomb(X, Y)) {      // check ăn item bomb
-                return;                     // không phải item.
+        if (!checkEatSpeed(X, Y)) {             // check ăn item speed
+            if (!checkEatBomb(X, Y)) {          // check ăn item bomb
+                if (!checkEatFlame(X, Y)) {      // check ăn item flame
+                    return;                     // không phải item.
+                }
             }
         }
+    }
+
+    public boolean checkEatFlame(int X, int Y) {
+        if (checkFlameItem(X, Y)) {
+            board.bomberMan.setLengthFlame(board.bomberMan.getLengthFlame() + 1);
+            FlameItem flameItem = (FlameItem) board.checkEntity(X / Sprite.SCALED_SIZE, Y / Sprite.SCALED_SIZE);
+            flameItem.setImasu(false);
+            return true;
+        }
+        return false;
     }
 
     public boolean checkEatSpeed(int X, int Y) {
         if (checkSpeedItem(X, Y)) {
             board.bomberMan.setSpeed(board.bomberMan.getSpeed() * 2);
-            SpeedItem speedItem = (SpeedItem) board.checkEntity
-                    (X / Sprite.SCALED_SIZE,
-                            Y / Sprite.SCALED_SIZE);
+            SpeedItem speedItem = (SpeedItem) board.checkEntity(X / Sprite.SCALED_SIZE,Y / Sprite.SCALED_SIZE);
             speedItem.setImasu(false);
             return true;
         }
@@ -206,6 +217,13 @@ public class KeyControl {
 
     public boolean checkSpeedItem(int X, int Y) {
         if (board.checkEntity(X / Sprite.SCALED_SIZE, Y / Sprite.SCALED_SIZE) instanceof SpeedItem) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkFlameItem(int X, int Y) {
+        if (board.checkEntity(X / Sprite.SCALED_SIZE, Y / Sprite.SCALED_SIZE) instanceof FlameItem) {
             return true;
         }
         return false;

@@ -6,6 +6,7 @@ import Entities.Entity;
 import Entities.Mono.*;
 
 import Entities.Player.Bomb;
+import Entities.Player.BomberMan;
 import Graphics.Sprite;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -27,7 +28,7 @@ public class Play extends Application {
 
     private GraphicsContext gc;
     private Canvas canvas;
-    String fileMap = "res/levels/Level1.txt";
+    public static String fileMap = "res/levels/Level1.txt";
 
     public static void main(String[] args) {
         launch(args);

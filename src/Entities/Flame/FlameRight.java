@@ -5,16 +5,26 @@ import javafx.scene.image.Image;
 
 public class FlameRight extends Flame {
 
-    public FlameRight(int x, int y, Image img) {
+    public boolean last;
+
+    public FlameRight(int x, int y, Image img, boolean last) {
         super(x, y, img);
+        this.last = last;
     }
 
     @Override
     public void update() {
         setAnimate();
         timeImasu--;
-        img  =  Sprite.movingSprite(Sprite.explosion_horizontal_right_last1,
-                                    Sprite.explosion_horizontal_right_last2,
-                                    animate, 15).getFxImage();
+        if (last) {
+            img  =  Sprite.movingSprite(Sprite.explosion_horizontal_right_last1,
+                    Sprite.explosion_horizontal_right_last2,
+                    animate, 15).getFxImage();
+        } else {
+            img = Sprite.movingSprite(Sprite.explosion_horizontal1,
+                    Sprite.explosion_horizontal2,
+                    animate, 15).getFxImage();
+        }
+
     }
 }

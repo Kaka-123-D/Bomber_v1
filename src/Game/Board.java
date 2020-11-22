@@ -6,6 +6,7 @@ import Entities.Enemy.Oneal;
 import Entities.Entity;
 import Entities.Item.BombItem;
 import Entities.Item.FlameItem;
+import Entities.Item.Item;
 import Entities.Item.SpeedItem;
 import Entities.Mono.Brick;
 import Entities.Mono.Grass;
@@ -27,14 +28,15 @@ import java.util.Scanner;
 
 public class Board {
 
-    private int level;
     private int column;
     private int row;
+    public static int level;
     public List<Entity> entityList = new ArrayList<>();
-    public List<Enemy> enemyList = new ArrayList<>();
+    public static List<Enemy> enemyList = new ArrayList<>();
     public boolean[][] checkMovePlayer;
     public boolean[][] checkMoveEnemy;
     public BomberMan bomberMan = new BomberMan(1, 1, Sprite.player_right.getFxImage());
+    public Portal portal;
 
     public Board(String fileName) {
 
@@ -70,8 +72,9 @@ public class Board {
                         changeCheckMoveEnemy(i, j);
                         break;
                     case 'x':
+                        entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
                         entityList.add(new Portal(j, i, Sprite.portal.getFxImage()));
-                        entityList.add(new Brick(j, i, Sprite.wall.getFxImage()));
+                        entityList.add(new Brick(j, i, Sprite.brick.getFxImage()));
                         changeCheckMovePlayer(i, j);
                         changeCheckMoveEnemy(i, j);
                         break;
@@ -146,14 +149,15 @@ public class Board {
         // check bomber va chạm enemy
         if (checkEnemyKillPlayer()) bomberMan.imasu = false;
 
-        // update mono, bomb, player
+        // update mono, bomb, player, item
         for (int i = 0; i < entityList.size(); i++) {
-            if (entityList.get(i) instanceof Bomb) ((Bomb) entityList.get(i)).updateBomb(entityList, enemyList);
+            if (entityList.get(i) instanceof Bomb) {
+                ((Bomb) entityList.get(i)).updateBomb(entityList, enemyList, bomberMan.getLengthFlame());
+            }
             else entityList.get(i).update();
         }
 
         // update enemy
-        if (!bomberMan.imasu) return;
         for (int i = 0; i < enemyList.size(); i++) {
             if (!enemyList.get(i).imasu) enemyList.get(i).update();
             else enemyList.get(i).updateMove(checkMoveEnemy);
@@ -163,7 +167,7 @@ public class Board {
     public void render(GraphicsContext gc, Canvas canvas) {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-        /* render mono, bomb */
+        /* render mono, bomb, item */
         for (int i = 0; i < entityList.size(); i++) {
             if (checkRender(i)) entityList.get(i).render(gc);
             else i--;
@@ -182,8 +186,7 @@ public class Board {
         if (checkRemovePlayer(index)) return false;
         if (checkRemoveBomb(index)) return false;
         if (checkRemoveBrick(index)) return false;
-        if (checkRemoveBombItem(index)) return false;
-        if (checkRemoveSpeedItem(index)) return false;
+        if (checkRemoveItem(index)) return false;
         return true;
     }
 
@@ -225,18 +228,9 @@ public class Board {
         return false;
     }
 
-    public boolean checkRemoveBombItem(int index) {
-        if (entityList.get(index) instanceof BombItem
-                && ((BombItem) entityList.get(index)).isImasu() == false) {
-            entityList.remove(index);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean checkRemoveSpeedItem(int index) {
-        if (entityList.get(index) instanceof SpeedItem
-                && ((SpeedItem) entityList.get(index)).isImasu() == false) {
+    public boolean checkRemoveItem(int index) {
+        if (entityList.get(index) instanceof Item
+                && entityList.get(index).isImasu() == false) {
             entityList.remove(index);
             return true;
         }
