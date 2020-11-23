@@ -8,9 +8,9 @@ import javafx.scene.image.Image;
 
 public class BomberMan extends AnimateEntity {
 
-    private int speed = 1 + (Sprite.SCALED_SIZE / 16) - 1;
-    private int lengthFlame = 1;
-    private int amountBom = 1;
+    private int speed = 4 + (Sprite.SCALED_SIZE / 16) - 1;
+    private int lengthFlame = 5;
+    private int amountBom = 5;
     public int timeSpacePutBom = 0;
     public int timeReset = 60;
     public static int live = 3; // 3 mạng
@@ -43,6 +43,16 @@ public class BomberMan extends AnimateEntity {
     public void setAmountBom(int amountBom) {
         if (this.amountBom > amountBom) timeSpacePutBom = 15;
         this.amountBom = amountBom;
+    }
+
+    @Override
+    public void setX(int x) {
+        this.x = x * Sprite.SCALED_SIZE;
+    }
+
+    @Override
+    public void setY(int y) {
+        this.y = y * Sprite.SCALED_SIZE;
     }
 
     @Override

@@ -30,17 +30,20 @@ public class Board {
 
     private int column;
     private int row;
-    public static int level;
+    public int level;
     public List<Entity> entityList = new ArrayList<>();
     public static List<Enemy> enemyList = new ArrayList<>();
     public boolean[][] checkMovePlayer;
     public boolean[][] checkMoveEnemy;
-    public BomberMan bomberMan = new BomberMan(1, 1, Sprite.player_right.getFxImage());
-    public Portal portal;
+    public static BomberMan bomberMan = new BomberMan(1, 1, Sprite.player_right.getFxImage());
+    public static Portal portal;
 
     public Board(String fileName) {
+        inputFromFile(fileName);
+    }
 
-        File file = new File(fileName);
+    public void inputFromFile(String fileMap) {
+        File file = new File(fileMap);
         Scanner scanner = null;
         try {
             scanner = new Scanner(file);
@@ -49,6 +52,7 @@ public class Board {
         }
 
         level = scanner.nextInt();
+        System.out.println(level);
         row = scanner.nextInt();
         column = scanner.nextInt();
         checkMovePlayer = new boolean[row * Sprite.SCALED_SIZE][column * Sprite.SCALED_SIZE];
@@ -73,7 +77,8 @@ public class Board {
                         break;
                     case 'x':
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
-                        entityList.add(new Portal(j, i, Sprite.portal.getFxImage()));
+                        portal = new Portal(j, i, Sprite.portal.getFxImage());
+                        entityList.add(portal);
                         entityList.add(new Brick(j, i, Sprite.brick.getFxImage()));
                         changeCheckMovePlayer(i, j);
                         changeCheckMoveEnemy(i, j);
@@ -146,6 +151,8 @@ public class Board {
 
     public void update() {
 
+        checkNextLevel();
+
         // check bomber va chạm enemy
         if (checkEnemyKillPlayer()) bomberMan.imasu = false;
 
@@ -162,6 +169,7 @@ public class Board {
             if (!enemyList.get(i).imasu) enemyList.get(i).update();
             else enemyList.get(i).updateMove(checkMoveEnemy);
         }
+
     }
 
     public void render(GraphicsContext gc, Canvas canvas) {
@@ -180,6 +188,22 @@ public class Board {
 
         /* render player */
         if (bomberMan != null && bomberMan.timeReset != 0) bomberMan.render(gc);
+    }
+
+    public void checkNextLevel() {
+        if (portal.nextLevel) {
+            System.out.println(level);
+            int X = (bomberMan.getX() + (3 * Sprite.SCALED_SIZE) / 8) / Sprite.SCALED_SIZE;
+            int Y = (bomberMan.getY() + Sprite.SCALED_SIZE / 2) / Sprite.SCALED_SIZE;
+            if (X == portal.getX() && Y == portal.getY()) {
+                entityList.clear();
+                String fileMap = "res/levels/Level" + String.valueOf(level + 1) + ".txt";
+                inputFromFile(fileMap);
+                portal.nextLevel = false;
+                bomberMan.setX(1);
+                bomberMan.setY(1);
+            }
+        }
     }
 
     public boolean checkRender(int index) {

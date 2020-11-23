@@ -19,11 +19,4 @@ public class Portal extends Entity {
             nextLevel = true;
         }
     }
-
-    public void update(Board board) {
-        if (nextLevel) {
-            Play.fileMap = Play.fileMap.substring(0, 16) + String.valueOf(1 + Board.level);
-            board = new Board(Play.fileMap);
-        }
-    }
 }
