@@ -1,5 +1,6 @@
 package Entities.Player;
 
+import Audio.Music;
 import Entities.AnimateEntity;
 import Entities.Enemy.Enemy;
 import Entities.Entity;
@@ -7,6 +8,7 @@ import Entities.Flame.*;
 import Entities.Item.Item;
 import Entities.Mono.Brick;
 import Entities.Mono.Grass;
+import Game.Play;
 import Graphics.Sprite;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -16,6 +18,7 @@ import java.util.List;
 
 public class Bomb extends AnimateEntity {
 
+    public Music music = new Music("src/Audio/no.mp3");
     public int timeToExploded = 120; // 2s
     public int explodeTime = 30;
     public boolean allowEntry = true;
@@ -41,7 +44,9 @@ public class Bomb extends AnimateEntity {
 
     public void updateBomb(List<Entity> entityList, List<Enemy> enemyList, int length) {
         timeToExploded--;
+
         if (timeToExploded == 0) {
+            music.nhacNen.play();
 
             flameCenter = new FlameCenter(x, y, Sprite.bomb_exploded.getFxImage());
 
@@ -57,6 +62,7 @@ public class Bomb extends AnimateEntity {
             createFlameRight(x + 1 + i, y, entityList, true);
             createFlameLeft(x - 1 - i, y, entityList, true);
         }
+
         if (timeToExploded < 0) {
             explode(entityList, enemyList);
             return;

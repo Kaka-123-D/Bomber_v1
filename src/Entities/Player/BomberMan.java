@@ -10,10 +10,10 @@ public class BomberMan extends AnimateEntity {
 
     private int speed = 4 + (Sprite.SCALED_SIZE / 16) - 1;
     private int lengthFlame = 5;
-    private int amountBom = 5;
+    private int amountBom = 15;
     public int timeSpacePutBom = 0;
     public int timeReset = 60;
-    public static int live = 3; // 3 mạng
+    public static int live = 999; // 3 mạng
 
     public BomberMan(int x, int y, Image img) {
         super(x * Sprite.SCALED_SIZE, y * Sprite.SCALED_SIZE, img);

@@ -1,34 +1,23 @@
 package Game;
 
-import Entities.Enemy.Balloon;
-import Entities.Enemy.Oneal;
-import Entities.Entity;
-import Entities.Mono.*;
+import Audio.Music;
 
-import Entities.Player.Bomb;
-import Entities.Player.BomberMan;
 import Graphics.Sprite;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-
-import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
 
 public class Play extends Application {
 
     private GraphicsContext gc;
     private Canvas canvas;
-    public static String fileMap = "res/levels/Level1.txt";
+    public String fileMap = "res/levels/Level1.txt";
+    public static String fileMusic = "src/Audio/harehareya.mp3";
+    public static Music music = new Music(fileMusic);
 
     public static void main(String[] args) {
         launch(args);
@@ -49,6 +38,7 @@ public class Play extends Application {
         KeyControl control = new KeyControl(board, scene);
         control.catchEvent();
 
+        music.nhacNen.play();
         stage.setScene(control.scene);
         stage.show();
 

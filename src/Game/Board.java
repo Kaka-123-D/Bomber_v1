@@ -52,7 +52,6 @@ public class Board {
         }
 
         level = scanner.nextInt();
-        System.out.println(level);
         row = scanner.nextInt();
         column = scanner.nextInt();
         checkMovePlayer = new boolean[row * Sprite.SCALED_SIZE][column * Sprite.SCALED_SIZE];
@@ -192,7 +191,6 @@ public class Board {
 
     public void checkNextLevel() {
         if (portal.nextLevel) {
-            System.out.println(level);
             int X = (bomberMan.getX() + (3 * Sprite.SCALED_SIZE) / 8) / Sprite.SCALED_SIZE;
             int Y = (bomberMan.getY() + Sprite.SCALED_SIZE / 2) / Sprite.SCALED_SIZE;
             if (X == portal.getX() && Y == portal.getY()) {
