@@ -153,7 +153,7 @@ public class Board {
         checkNextLevel();
 
         // check bomber va chạm enemy
-        if (checkEnemyKillPlayer()) bomberMan.imasu = false;
+        if (checkEnemyKillPlayer() && bomberMan.timeNoDie == 0) bomberMan.imasu = false;
 
         // update mono, bomb, player, item
         for (int i = 0; i < entityList.size(); i++) {

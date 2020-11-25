@@ -146,6 +146,7 @@ public class KeyControl {
 
             xuLiDiQuaBom(bomX, bomY, notBomX, notBomY);
 
+
             eatItem(X + 4, Y + Sprite.SCALED_SIZE);
         }
     }

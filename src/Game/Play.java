@@ -16,8 +16,8 @@ public class Play extends Application {
     private GraphicsContext gc;
     private Canvas canvas;
     public String fileMap = "res/levels/Level1.txt";
-    public static String fileMusic = "src/Audio/harehareya.mp3";
-    public static Music music = new Music(fileMusic);
+    public String fileMusic = "src/Audio/harehareya.mp3";
+    public Music music = new Music(fileMusic);
 
     public static void main(String[] args) {
         launch(args);

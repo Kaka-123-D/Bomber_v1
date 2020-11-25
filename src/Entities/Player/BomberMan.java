@@ -8,12 +8,13 @@ import javafx.scene.image.Image;
 
 public class BomberMan extends AnimateEntity {
 
-    private int speed = 4 + (Sprite.SCALED_SIZE / 16) - 1;
-    private int lengthFlame = 5;
+    private int speed = 3 + (Sprite.SCALED_SIZE / 16) - 1;
+    private int lengthFlame = 1;
     private int amountBom = 15;
     public int timeSpacePutBom = 0;
     public int timeReset = 60;
-    public static int live = 999; // 3 mạng
+    public int timeNoDie = 120;
+    public static int live = 90; // 3 mạng
 
     public BomberMan(int x, int y, Image img) {
         super(x * Sprite.SCALED_SIZE, y * Sprite.SCALED_SIZE, img);
@@ -57,6 +58,8 @@ public class BomberMan extends AnimateEntity {
 
     @Override
     public void update() {
+        if (timeNoDie > 0) timeNoDie--;
+
         setAnimate();
         if (!imasu) {
             timeReset--;
@@ -74,7 +77,10 @@ public class BomberMan extends AnimateEntity {
 
     public void updateEvent(int xControl, int yControl, Image img) {
         if (timeSpacePutBom > 0) timeSpacePutBom--;
-        if (img != null && imasu) this.img = img;
+        if (img != null && imasu) {
+            if (timeNoDie > 0 && timeNoDie % 10 > 5) this.img = null;
+            else this.img = img;
+        }
         x = x + xControl;
         y = y + yControl;
     }

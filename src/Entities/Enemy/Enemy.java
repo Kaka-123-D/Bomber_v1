@@ -13,7 +13,7 @@ public abstract class Enemy extends AnimateEntity {
     public int timeMoveACell = Sprite.SCALED_SIZE;
     public int timeToRemove = 60;
     protected int checkPath = -1;
-    public int speed = 2;
+    public int speed = 1;
 
     public int getCheckPath() {
         return checkPath;
