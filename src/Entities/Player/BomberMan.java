@@ -9,13 +9,13 @@ import javafx.scene.image.Image;
 
 public class BomberMan extends AnimateEntity {
 
-    private int speed = (Sprite.SCALED_SIZE / 16) - 1;
+    private int speed = 3;
     private int lengthFlame = 1;
     private int amountBom = 15;
     public int timeSpacePutBom = 0;
     public int timeReset = 60;
     public int timeNoDie = 90;
-    public static int live = 10; // 3 mạng
+    public static int live = 3; // 3 mạng
 
     public String fileMusic = "src/Audio/run.mp3";
     public Music music;
@@ -91,6 +91,7 @@ public class BomberMan extends AnimateEntity {
             if (timeNoDie > 0 && timeNoDie % 10 > 5) this.img = null;
             else this.img = img;
         }
+
         if (xControl != 0 || yControl != 0) {
             music.nhacNen.setMute(false);
         }

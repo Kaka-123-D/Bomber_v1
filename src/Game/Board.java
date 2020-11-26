@@ -328,13 +328,14 @@ public class Board {
         if (entityList.get(index) instanceof BomberMan
                 && ((BomberMan) entityList.get(index)).timeReset == 0) {
             entityList.remove(index);
-            if (BomberMan.live != 0)
+            if (BomberMan.live != 1)
             {
                 bomberMan = new BomberMan(1, 1, Sprite.player_right.getFxImage());
                 bomberMan.live--;
                 entityList.add(bomberMan);
+            } else {
+                renderGameOver();
             }
-            else renderGameOver();
             return true;
         }
         return false;

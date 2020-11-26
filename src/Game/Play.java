@@ -52,12 +52,14 @@ public class Play extends Application {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long l) {
-                board.update();
-                if (board.bomberMan.imasu && Board.timeOpen < 0) {
-                    control.xuLi();
-                    board.bomberMan.updateEvent(control.xControl, control.yControl, control.imgPlayer);
+                if (Board.bomberMan.live > 0) {
+                    board.update();
+                    if (board.bomberMan.imasu && Board.timeOpen < 0) {
+                        control.xuLi();
+                        board.bomberMan.updateEvent(control.xControl, control.yControl, control.imgPlayer);
+                    }
+                    board.render(gc, canvas);
                 }
-                board.render(gc, canvas);
             }
         };
         timer.start();
