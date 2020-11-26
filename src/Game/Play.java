@@ -22,8 +22,6 @@ public class Play extends Application {
     private GraphicsContext gc;
     private Canvas canvas;
     public String fileMap = "res/levels/Level1.txt";
-    public String fileMusic = "src/Audio/harehareya.mp3";
-    public Music music = new Music(fileMusic);
 
     public static void main(String[] args) {
         launch(args);
@@ -48,7 +46,6 @@ public class Play extends Application {
         KeyControl control = new KeyControl(board, scene);
         control.catchEvent();
 
-        music.nhacNen.play();
         stage.setScene(control.scene);
         stage.show();
 

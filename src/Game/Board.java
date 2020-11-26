@@ -1,8 +1,7 @@
 package Game;
 
-import Entities.Enemy.Balloon;
-import Entities.Enemy.Enemy;
-import Entities.Enemy.Oneal;
+import Audio.Music;
+import Entities.Enemy.*;
 import Entities.Entity;
 import Entities.Item.BombItem;
 import Entities.Item.FlameItem;
@@ -34,6 +33,7 @@ public class Board {
     public static List<Enemy> enemyList = new ArrayList<>();
     public boolean[][] checkMovePlayer;
     public boolean[][] checkMoveEnemy;
+    public boolean[][] checkMoveKondoria;
     public static BomberMan bomberMan = new BomberMan(1, 1, Sprite.player_right.getFxImage());
     public static Portal portal;
 
@@ -63,6 +63,7 @@ public class Board {
         column = scanner.nextInt();
         checkMovePlayer = new boolean[row * Sprite.SCALED_SIZE][column * Sprite.SCALED_SIZE];
         checkMoveEnemy = new boolean[row * Sprite.SCALED_SIZE][column * Sprite.SCALED_SIZE];
+        checkMoveKondoria = new boolean[row * Sprite.SCALED_SIZE][column * Sprite.SCALED_SIZE];
         String str = scanner.nextLine();
 
         for (int i = 0; i < row; i++){
@@ -74,6 +75,7 @@ public class Board {
                         entityList.add(new Wall(j, i, Sprite.wall.getFxImage()));
                         changeCheckMovePlayer(i, j);
                         changeCheckMoveEnemy(i, j);
+                        changeCheckMoveKondoria(i, j);
                         break;
                     case '*':
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
@@ -118,6 +120,14 @@ public class Board {
                         changeCheckMovePlayer(i, j);
                         changeCheckMoveEnemy(i, j);
                         break;
+                    case '3':
+                        entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
+                        enemyList.add(new Kondoria(j, i, Sprite.kondoria_left1.getFxImage()));
+                        break;
+                    case '4':
+                        entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
+                        enemyList.add(new Minvo(j, i, Sprite.kondoria_left1.getFxImage()));
+                        break;
                     default:
                         entityList.add(new Grass(j, i, Sprite.grass.getFxImage()));
                         break;
@@ -141,6 +151,15 @@ public class Board {
             for (int j = c * Sprite.SCALED_SIZE; j < (c + 1) * Sprite.SCALED_SIZE; j++) {
                 if (!checkMoveEnemy[i][j]) checkMoveEnemy[i][j] = true;
                 else checkMoveEnemy[i][j] = false;
+            }
+        }
+    }
+
+    public void changeCheckMoveKondoria(int r, int c) {
+        for (int i = r * Sprite.SCALED_SIZE; i < (r + 1) * Sprite.SCALED_SIZE; i++) {
+            for (int j = c * Sprite.SCALED_SIZE; j < (c + 1) * Sprite.SCALED_SIZE; j++) {
+                if (!checkMoveKondoria[i][j]) checkMoveKondoria[i][j] = true;
+                else checkMoveKondoria[i][j] = false;
             }
         }
     }
@@ -177,6 +196,7 @@ public class Board {
         // update enemy
         for (int i = 0; i < enemyList.size(); i++) {
             if (!enemyList.get(i).imasu) enemyList.get(i).update();
+            else if (enemyList.get(i) instanceof Kondoria) enemyList.get(i).updateMove(checkMoveKondoria);
             else enemyList.get(i).updateMove(checkMoveEnemy);
         }
 
@@ -243,8 +263,11 @@ public class Board {
         if (portal.nextLevel) {
             int X = (bomberMan.getX() + (3 * Sprite.SCALED_SIZE) / 8) / Sprite.SCALED_SIZE;
             int Y = (bomberMan.getY() + Sprite.SCALED_SIZE / 2) / Sprite.SCALED_SIZE;
+
             if (X == portal.getX() && Y == portal.getY()) {
                 entityList.clear();
+                Music music = new Music("src/Audio/tada.mp3");
+                music.nhacNen.play();
 
                 textTime.setText("");
                 textScore.setText("");

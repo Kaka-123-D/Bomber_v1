@@ -1,5 +1,6 @@
 package Entities.Player;
 
+import Audio.Music;
 import Entities.AnimateEntity;
 import Entities.Entity;
 import Graphics.Sprite;
@@ -8,13 +9,16 @@ import javafx.scene.image.Image;
 
 public class BomberMan extends AnimateEntity {
 
-    private int speed = 3 + (Sprite.SCALED_SIZE / 16) - 1;
+    private int speed = (Sprite.SCALED_SIZE / 16) - 1;
     private int lengthFlame = 1;
     private int amountBom = 15;
     public int timeSpacePutBom = 0;
     public int timeReset = 60;
     public int timeNoDie = 90;
-    public static int live = 3; // 3 mạng
+    public static int live = 10; // 3 mạng
+
+    public String fileMusic = "src/Audio/run.mp3";
+    public Music music;
 
     public BomberMan(int x, int y, Image img) {
         super(x * Sprite.SCALED_SIZE, y * Sprite.SCALED_SIZE, img);
@@ -59,8 +63,15 @@ public class BomberMan extends AnimateEntity {
     public void update() {
         if (timeNoDie > 0) timeNoDie--;
 
+        if (animate % 1000 == 0) {
+            if (music != null) music.nhacNen.setMute(true);
+            music = new Music(fileMusic);
+            music.nhacNen.play();
+        }
+
         setAnimate();
         if (!imasu) {
+            music.nhacNen.setMute(true);
             timeReset--;
             img = Sprite.movingSprite(Sprite.player_dead1,
                                     Sprite.player_dead2,
@@ -80,6 +91,10 @@ public class BomberMan extends AnimateEntity {
             if (timeNoDie > 0 && timeNoDie % 10 > 5) this.img = null;
             else this.img = img;
         }
+        if (xControl != 0 || yControl != 0) {
+            music.nhacNen.setMute(false);
+        }
+        else music.nhacNen.setMute(true);
         x = x + xControl;
         y = y + yControl;
     }
