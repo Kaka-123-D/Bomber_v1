@@ -11,6 +11,7 @@ public class Brick extends AnimateEntity {
 
     public Brick(int x, int y, Image img) {
         super(x, y, img);
+        score = 1;
     }
 
     @Override

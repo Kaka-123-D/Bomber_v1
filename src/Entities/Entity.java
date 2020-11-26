@@ -10,6 +10,7 @@ public abstract class Entity {
     protected int y;
     protected Image img;
     public boolean imasu = true;
+    public int score;
 
     public Entity(int x, int y, Image img) {
         this.x = x;
@@ -42,7 +43,7 @@ public abstract class Entity {
     }
 
     public void render(GraphicsContext gc) {
-        gc.drawImage(img, x * Sprite.SCALED_SIZE, y * Sprite.SCALED_SIZE);
+        gc.drawImage(img, x * Sprite.SCALED_SIZE, y * Sprite.SCALED_SIZE + 50);
     }
 
     public boolean isImasu() {

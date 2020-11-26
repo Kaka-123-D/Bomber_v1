@@ -10,8 +10,11 @@ import java.util.Random;
 
 public class Oneal extends Enemy {
 
+    private int speedMax = 4;
+
     public Oneal(int x, int y, Image img) {
         super(x, y, img);
+        score = 5;
     }
 
     @Override
@@ -31,6 +34,7 @@ public class Oneal extends Enemy {
 
     @Override
     public void updateMove(boolean[][] checkMove) {
+
         Random random = new Random();
         // Mảng kiểm tra hướng có đi được ko 1: là đi được, 0: là ko đi được
         // arr[0] là left, 1 là right, 2 là up, 3 là down
@@ -179,7 +183,7 @@ public class Oneal extends Enemy {
                     // Nếu boss ở trên người và có thể đi xuống dưới được
                     if (kcBossY < 0 && arr[3] == 1) {
                         // Tăng tốc độ
-                        speed = 2;
+                        speed = speedMax;
                         setAnimate();
                         // Hoạt hoạc của boss
                         img = Sprite.movingSprite(Sprite.oneal_right1,
@@ -198,7 +202,7 @@ public class Oneal extends Enemy {
                     // Nếu boss ở dưới người và có thể đi lên dưới được
                     else if (kcBossY > 0 && arr[2] == 1) {
                         // Tăng tốc độ
-                        speed = 2;
+                        speed = speedMax;
                         setAnimate();
                         // Hoạt hoạc của boss
                         img = Sprite.movingSprite(Sprite.oneal_left1,
@@ -246,7 +250,7 @@ public class Oneal extends Enemy {
                     // Nếu boss ở bên trái người người và có thể đi sang phải được.
                     if (kcBossX < 0 && arr[1] == 1) {
                         // Tăng tốc độ
-                        speed = 2;
+                        speed = speedMax;
                         setAnimate();
                         // Hoạt họa của boss
                         img = Sprite.movingSprite(Sprite.oneal_right1,
@@ -265,7 +269,7 @@ public class Oneal extends Enemy {
                     // Nếu boss ở bên phải người người và có thể đi sang trái được.
                     else if (kcBossX > 0 && arr[0] == 1) {
                         // Tăng tốc.
-                        speed = 2;
+                        speed = speedMax;
                         setAnimate();
                         // Hoạt họa của boss
                         img = Sprite.movingSprite(Sprite.oneal_left1,

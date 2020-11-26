@@ -13,12 +13,11 @@ public class BomberMan extends AnimateEntity {
     private int amountBom = 15;
     public int timeSpacePutBom = 0;
     public int timeReset = 60;
-    public int timeNoDie = 120;
-    public static int live = 90; // 3 mạng
+    public int timeNoDie = 90;
+    public static int live = 3; // 3 mạng
 
     public BomberMan(int x, int y, Image img) {
         super(x * Sprite.SCALED_SIZE, y * Sprite.SCALED_SIZE, img);
-        live--;
     }
 
     public int getLengthFlame() {
@@ -42,7 +41,7 @@ public class BomberMan extends AnimateEntity {
     }
 
     public void setAmountBom(int amountBom) {
-        if (this.amountBom > amountBom) timeSpacePutBom = 15;
+        if (this.amountBom > amountBom) timeSpacePutBom = 10;
         this.amountBom = amountBom;
     }
 
@@ -72,7 +71,7 @@ public class BomberMan extends AnimateEntity {
 
     @Override
     public void render(GraphicsContext gc) {
-        gc.drawImage(img, x, y);
+        gc.drawImage(img, x, y + 50);
     }
 
     public void updateEvent(int xControl, int yControl, Image img) {

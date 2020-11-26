@@ -13,6 +13,7 @@ public class Balloon extends Enemy {
 
     public Balloon(int x, int y, Image img) {
         super(x, y, img);
+        score = 3;
     }
 
     @Override

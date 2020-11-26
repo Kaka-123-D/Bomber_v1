@@ -10,6 +10,7 @@ import Entities.Mono.Grass;
 import Entities.Mono.Wall;
 import Entities.Player.Bomb;
 import Entities.Player.BomberMan;
+import Game.Board;
 import Graphics.Sprite;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -32,6 +33,7 @@ public abstract class Flame extends AnimateEntity {
                     && !(entityList.get(i) instanceof Bomb)
                     && !(entityList.get(i) instanceof Item)) {
                 entityList.get(i).imasu = false;
+                Board.score += entityList.get(i).score;
             }
 
             /* player tự hủy */
@@ -92,6 +94,8 @@ public abstract class Flame extends AnimateEntity {
                     && (Y - 4 + Sprite.SCALED_SIZE) / Sprite.SCALED_SIZE == y) {
                 enemyList.get(i).imasu = false;
             }
+
+            if (enemyList.get(i).imasu == false) Board.score += enemyList.get(i).score;
         }
     }
 }

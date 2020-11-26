@@ -17,11 +17,10 @@ import Entities.Player.BomberMan;
 import Graphics.Sprite;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.text.Text;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.sql.SQLClientInfoException;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -38,11 +37,19 @@ public class Board {
     public static BomberMan bomberMan = new BomberMan(1, 1, Sprite.player_right.getFxImage());
     public static Portal portal;
 
+    public Text textTime;
+    public Text textScore;
+    public Text textLives;
+    public int timeLimit = 201 * 60;
+    public static int timeOpen = 60;
+    public static int score = 0;
+
     public Board(String fileName) {
         inputFromFile(fileName);
     }
 
     public void inputFromFile(String fileMap) {
+
         File file = new File(fileMap);
         Scanner scanner = null;
         try {
@@ -149,6 +156,10 @@ public class Board {
     }
 
     public void update() {
+        if (timeOpen > 0) return;
+
+        if (timeLimit >= 0) timeLimit --;
+        if (timeLimit < 0 || bomberMan.live == 0) return;
 
         checkNextLevel();
 
@@ -173,6 +184,16 @@ public class Board {
 
     public void render(GraphicsContext gc, Canvas canvas) {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        if (timeLimit <= 0 || bomberMan.live == 0) {
+            renderGameOver();
+            return;
+        }
+
+        renderStage();
+        if (timeOpen > 0) return;
+        renderInfo();
 
         /* render mono, bomb, item */
         for (int i = 0; i < entityList.size(); i++) {
@@ -189,12 +210,49 @@ public class Board {
         if (bomberMan != null && bomberMan.timeReset != 0) bomberMan.render(gc);
     }
 
+    public void renderStage() {
+        if (timeOpen >= 0) timeOpen --;
+        if (timeOpen == 0) {
+            Play.root.getChildren().remove(4);
+        }
+    }
+
+    public void renderGameOver() {
+        Canvas canvas = new Canvas(Sprite.SCALED_SIZE * column, Sprite.SCALED_SIZE * row + 50);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        Play.root.getChildren().add(canvas);
+        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        Play.addTextToGroup(250, 250, "Game Over", 100);
+    }
+
+    public void renderInfo() {
+        // thời gian giới hạn 1 level.
+        textTime = (Text) Play.root.getChildren().get(1);
+        textTime.setText("Time: " + String.valueOf(timeLimit / 60));
+
+        // số điểm người chơi kiếm được.
+        textScore = (Text) Play.root.getChildren().get(2);
+        textScore.setText("Score: " + String.valueOf(score));
+
+        // số mạng player.
+        textLives = (Text) Play.root.getChildren().get(3);
+        textLives.setText("Lives: " + String.valueOf(bomberMan.live));
+    }
+
     public void checkNextLevel() {
         if (portal.nextLevel) {
             int X = (bomberMan.getX() + (3 * Sprite.SCALED_SIZE) / 8) / Sprite.SCALED_SIZE;
             int Y = (bomberMan.getY() + Sprite.SCALED_SIZE / 2) / Sprite.SCALED_SIZE;
             if (X == portal.getX() && Y == portal.getY()) {
                 entityList.clear();
+
+                textTime.setText("");
+                textScore.setText("");
+                textLives.setText("");
+
+                timeOpen = 60;
+                Play.addTextToGroup(330, 250, "Stage " + String.valueOf(level + 1), 100);
+
                 String fileMap = "res/levels/Level" + String.valueOf(level + 1) + ".txt";
                 inputFromFile(fileMap);
                 portal.nextLevel = false;
@@ -214,15 +272,23 @@ public class Board {
 
     public boolean checkEnemyKillPlayer() {
         for (int i = 0; i < enemyList.size(); i++) {
-            int enemyXUP = (enemyList.get(i).getX() + 4) / Sprite.SCALED_SIZE;
-            int enemyYUP = (enemyList.get(i).getY() + 4) / Sprite.SCALED_SIZE;
-            int enemyXDOWN = 1 + (enemyList.get(i).getX() - 4) / Sprite.SCALED_SIZE;
-            int enemyYDOWN = 1 + (enemyList.get(i).getY() - 4) / Sprite.SCALED_SIZE;
-            int playerX = (bomberMan.getX() + (3 * Sprite.SCALED_SIZE) / 8) / Sprite.SCALED_SIZE;
-            int playerY = (bomberMan.getY() + (3 * Sprite.SCALED_SIZE) / 8) / Sprite.SCALED_SIZE;
+            if (enemyList.get(i).imasu) {
+                int enemyXUP = (enemyList.get(i).getX() + 4) / Sprite.SCALED_SIZE;
+                int enemyYUP = (enemyList.get(i).getY() + 4) / Sprite.SCALED_SIZE;
+                int enemyXDOWN = 1 + (enemyList.get(i).getX() - 4) / Sprite.SCALED_SIZE;
+                int enemyYDOWN = 1 + (enemyList.get(i).getY() - 4) / Sprite.SCALED_SIZE;
+                int playerX = (bomberMan.getX() + (3 * Sprite.SCALED_SIZE) / 8) / Sprite.SCALED_SIZE;
+                int playerY = (bomberMan.getY() + (3 * Sprite.SCALED_SIZE) / 8) / Sprite.SCALED_SIZE;
 
-            if (enemyXUP == playerX && enemyYUP == playerY) return true;
-            if (enemyXDOWN == playerX && enemyYDOWN == playerY) return true;
+                if (enemyXUP == playerX && enemyYUP == playerY) {
+                    if (bomberMan.timeNoDie == 0) enemyList.get(i).imasu = false;
+                    return true;
+                }
+                if (enemyXDOWN == playerX && enemyYDOWN == playerY) {
+                    if (bomberMan.timeNoDie == 0) enemyList.get(i).imasu = false;
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -242,9 +308,10 @@ public class Board {
             if (BomberMan.live != 0)
             {
                 bomberMan = new BomberMan(1, 1, Sprite.player_right.getFxImage());
+                bomberMan.live--;
                 entityList.add(bomberMan);
             }
-            else bomberMan = null;
+            else renderGameOver();
             return true;
         }
         return false;

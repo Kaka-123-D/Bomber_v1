@@ -29,7 +29,7 @@ public abstract class Enemy extends AnimateEntity {
 
     @Override
     public void render(GraphicsContext gc) {
-        gc.drawImage(img, x, y);
+        gc.drawImage(img, x, y + 50);
     }
 
     public abstract void updateMove(boolean[][] checkMove);
